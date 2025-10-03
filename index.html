@@ -70,6 +70,77 @@
             display: flex;
             gap: 30px;
             list-style: none;
+            align-items: center;
+        }
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .dropdown-toggle:hover {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .dropdown.active .dropdown-menu {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
         }
 
         .nav-links a {
@@ -325,12 +396,21 @@
         <div class="logo">COSMOS</div>
         <ul class="nav-links">
             <li><a href="#" onclick="showHome(); return false;">Home</a></li>
-            <li><a href="#" onclick="showPetezah(); return false;">Petezah</a></li>
-            <li><a href="#" onclick="showShadow(); return false;">Shadow</a></li>
-            <li><a href="#" onclick="showInterstellar(); return false;">Interstellar</a></li>
-            <li><a href="#" onclick="showPizza(); return false;">Pizza</a></li>
-            <li><a href="#" onclick="showMutipa(); return false;">Mutipa</a></li>
-            <li><a href="#" onclick="showDoge(); return false;">Doge</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event)">
+                    Sites ▼
+                </a>
+                <div class="dropdown-menu">
+                    <a href="#" onclick="showPetezah(); closeDropdown(); return false;">🎮 Petezah</a>
+                    <a href="#" onclick="showShadow(); closeDropdown(); return false;">🌑 Shadow</a>
+                    <a href="#" onclick="showInterstellar(); closeDropdown(); return false;">🌌 Interstellar</a>
+                    <a href="#" onclick="showPizza(); closeDropdown(); return false;">🍕 Pizza</a>
+                    <a href="#" onclick="showMutipa(); closeDropdown(); return false;">🔬 Mutipa</a>
+                    <a href="#" onclick="showDoge(); closeDropdown(); return false;">🐕 Doge</a>
+                    <a href="#" onclick="showNight(); closeDropdown(); return false;">🌙 Night</a>
+                    <a href="#" onclick="showBolt(); closeDropdown(); return false;">⚡ Bolt</a>
+                </div>
+            </li>
             <li><a href="#" onclick="openAboutBlank(); return false;">🚀 Launch</a></li>
             <li><a href="#" onclick="showSettings(); return false;" class="settings-icon">⚙️</a></li>
         </ul>
@@ -393,6 +473,14 @@
 
     <div class="iframe-container" id="dogeContainer">
         <iframe id="dogeFrame" allowfullscreen></iframe>
+    </div>
+
+    <div class="iframe-container" id="nightContainer">
+        <iframe id="nightFrame" allowfullscreen></iframe>
+    </div>
+
+    <div class="iframe-container" id="boltContainer">
+        <iframe id="boltFrame" allowfullscreen></iframe>
     </div>
 
     <div class="content" id="settingsContent" style="display: none;">
