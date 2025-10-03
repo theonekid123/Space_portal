@@ -73,6 +73,19 @@
             align-items: center;
         }
 
+        .nav-links > li > a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 10px;
+        }
+
+        .nav-links > li > a:hover {
+            color: #667eea;
+        }
+
         /* Dropdown Menu */
         .dropdown {
             position: relative;
@@ -141,34 +154,6 @@
         .dropdown-menu a:hover {
             background: rgba(102, 126, 234, 0.2);
             color: #667eea;
-        }
-
-        .nav-links a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 5px 10px;
-        }
-
-        .nav-links a:hover {
-            color: #667eea;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
         }
 
         .settings-icon {
@@ -396,8 +381,8 @@
         <div class="logo">COSMOS</div>
         <ul class="nav-links">
             <li><a href="#" onclick="showHome(); return false;">Home</a></li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event)">
+            <li class="dropdown" id="sitesDropdown">
+                <a href="#" class="dropdown-toggle" id="dropdownToggle">
                     Sites ▼
                 </a>
                 <div class="dropdown-menu">
@@ -445,6 +430,14 @@
             <div class="feature-card" onclick="showDoge()" style="cursor: pointer;">
                 <h3>🐕 Doge</h3>
                 <p>Much wow, such explore, very space</p>
+            </div>
+            <div class="feature-card" onclick="showNight()" style="cursor: pointer;">
+                <h3>🌙 Night</h3>
+                <p>Explore the darkness of the night sky</p>
+            </div>
+            <div class="feature-card" onclick="showBolt()" style="cursor: pointer;">
+                <h3>⚡ Bolt</h3>
+                <p>Lightning fast adventures at warp speed</p>
             </div>
         </div>
 
@@ -538,6 +531,26 @@
             starsContainer.appendChild(star);
         }
 
+        // Dropdown functionality
+        const dropdownToggle = document.getElementById('dropdownToggle');
+        const sitesDropdown = document.getElementById('sitesDropdown');
+
+        dropdownToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            sitesDropdown.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!sitesDropdown.contains(event.target)) {
+                sitesDropdown.classList.remove('active');
+            }
+        });
+
+        function closeDropdown() {
+            sitesDropdown.classList.remove('active');
+        }
+
         // Lazy load iframes - only load when clicked
         function loadIframe(iframeId, url) {
             const iframe = document.getElementById(iframeId);
@@ -546,98 +559,75 @@
             }
         }
 
-        function showPetezah() {
-            loadIframe('petezahFrame', 'https://tooeasybuddy.viiic.net/');
+        function hideAllContainers() {
             document.getElementById('mainContent').classList.add('hidden');
             document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('iframeContainer').classList.add('active');
+            document.getElementById('iframeContainer').classList.remove('active');
             document.getElementById('shadowContainer').classList.remove('active');
             document.getElementById('interstellarContainer').classList.remove('active');
             document.getElementById('pizzaContainer').classList.remove('active');
             document.getElementById('mutipaContainer').classList.remove('active');
             document.getElementById('dogeContainer').classList.remove('active');
+            document.getElementById('nightContainer').classList.remove('active');
+            document.getElementById('boltContainer').classList.remove('active');
+        }
+
+        function showPetezah() {
+            loadIframe('petezahFrame', 'https://tooeasybuddy.viiic.net/');
+            hideAllContainers();
+            document.getElementById('iframeContainer').classList.add('active');
         }
 
         function showShadow() {
             loadIframe('shadowFrame', 'https://ShadowMathLEbron.erc.hr');
-            document.getElementById('mainContent').classList.add('hidden');
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('iframeContainer').classList.remove('active');
+            hideAllContainers();
             document.getElementById('shadowContainer').classList.add('active');
-            document.getElementById('interstellarContainer').classList.remove('active');
-            document.getElementById('pizzaContainer').classList.remove('active');
-            document.getElementById('mutipaContainer').classList.remove('active');
-            document.getElementById('dogeContainer').classList.remove('active');
         }
 
         function showInterstellar() {
             loadIframe('interstellarFrame', 'https://mathchefart.erc.hr/');
-            document.getElementById('mainContent').classList.add('hidden');
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('iframeContainer').classList.remove('active');
-            document.getElementById('shadowContainer').classList.remove('active');
+            hideAllContainers();
             document.getElementById('interstellarContainer').classList.add('active');
-            document.getElementById('pizzaContainer').classList.remove('active');
-            document.getElementById('mutipaContainer').classList.remove('active');
-            document.getElementById('dogeContainer').classList.remove('active');
         }
 
         function showPizza() {
             loadIframe('pizzaFrame', 'https://coolmathstuff.erc.hr/');
-            document.getElementById('mainContent').classList.add('hidden');
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('iframeContainer').classList.remove('active');
-            document.getElementById('shadowContainer').classList.remove('active');
-            document.getElementById('interstellarContainer').classList.remove('active');
+            hideAllContainers();
             document.getElementById('pizzaContainer').classList.add('active');
-            document.getElementById('mutipaContainer').classList.remove('active');
-            document.getElementById('dogeContainer').classList.remove('active');
         }
 
         function showMutipa() {
             loadIframe('mutipaFrame', 'https://level.lab.madhacker.biz/');
-            document.getElementById('mainContent').classList.add('hidden');
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('iframeContainer').classList.remove('active');
-            document.getElementById('shadowContainer').classList.remove('active');
-            document.getElementById('interstellarContainer').classList.remove('active');
-            document.getElementById('pizzaContainer').classList.remove('active');
+            hideAllContainers();
             document.getElementById('mutipaContainer').classList.add('active');
-            document.getElementById('dogeContainer').classList.remove('active');
         }
 
         function showDoge() {
             loadIframe('dogeFrame', 'https://uknowimtuffboyyy.vercel.app/');
-            document.getElementById('mainContent').classList.add('hidden');
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('iframeContainer').classList.remove('active');
-            document.getElementById('shadowContainer').classList.remove('active');
-            document.getElementById('interstellarContainer').classList.remove('active');
-            document.getElementById('pizzaContainer').classList.remove('active');
-            document.getElementById('mutipaContainer').classList.remove('active');
+            hideAllContainers();
             document.getElementById('dogeContainer').classList.add('active');
         }
 
+        function showNight() {
+            loadIframe('nightFrame', 'https://tuffmean.vercel.app/apps');
+            hideAllContainers();
+            document.getElementById('nightContainer').classList.add('active');
+        }
+
+        function showBolt() {
+            loadIframe('boltFrame', 'https://tuffboy56.vercel.app/');
+            hideAllContainers();
+            document.getElementById('boltContainer').classList.add('active');
+        }
+
         function showHome() {
+            hideAllContainers();
             document.getElementById('mainContent').classList.remove('hidden');
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('iframeContainer').classList.remove('active');
-            document.getElementById('shadowContainer').classList.remove('active');
-            document.getElementById('interstellarContainer').classList.remove('active');
-            document.getElementById('pizzaContainer').classList.remove('active');
-            document.getElementById('mutipaContainer').classList.remove('active');
-            document.getElementById('dogeContainer').classList.remove('active');
         }
 
         function showSettings() {
-            document.getElementById('mainContent').classList.add('hidden');
+            hideAllContainers();
             document.getElementById('settingsContent').style.display = 'block';
-            document.getElementById('iframeContainer').classList.remove('active');
-            document.getElementById('shadowContainer').classList.remove('active');
-            document.getElementById('interstellarContainer').classList.remove('active');
-            document.getElementById('pizzaContainer').classList.remove('active');
-            document.getElementById('mutipaContainer').classList.remove('active');
-            document.getElementById('dogeContainer').classList.remove('active');
         }
 
         function openAboutBlank() {
