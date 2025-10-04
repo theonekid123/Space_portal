@@ -208,6 +208,54 @@
             transform: rotate(90deg);
         }
 
+        /* Tab Groups Bar */
+        .tab-groups {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            z-index: 200;
+            display: none;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tab-groups.active {
+            display: block;
+        }
+
+        .tab-item {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-right: 10px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .tab-item:hover {
+            background: rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-item.active-tab {
+            background: rgba(102, 126, 234, 0.5);
+            border-color: rgba(102, 126, 234, 0.8);
+        }
+
+        .tab-close {
+            margin-left: 8px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
         /* Main content */
         .content {
             position: relative;
@@ -276,6 +324,10 @@
             display: block;
         }
 
+        .iframe-container.with-tabs {
+            height: calc(100vh - 71px - 51px);
+        }
+
         .iframe-container iframe {
             width: 100%;
             height: 100%;
@@ -309,6 +361,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .feature-card:hover {
@@ -326,6 +379,43 @@
         .feature-card p {
             color: #b8b8d1;
             line-height: 1.6;
+        }
+
+        .pin-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .pin-button:hover {
+            background: rgba(255, 215, 0, 0.4);
+            transform: scale(1.1);
+        }
+
+        .pin-button.pinned {
+            background: rgba(255, 215, 0, 0.5);
+            border-color: rgba(255, 215, 0, 0.8);
+        }
+
+        .pinned-section {
+            margin-bottom: 40px;
+        }
+
+        .pinned-section h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 32px;
         }
 
         /* Settings Panel */
@@ -415,6 +505,41 @@
         .custom-input::placeholder {
             color: #b8b8d1;
         }
+
+        .panic-key-display {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid rgba(255, 107, 107, 0.5);
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        /* Mini Games */
+        #gameCanvas {
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .game-controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .game-controls button {
+            margin: 0 10px;
+        }
+
+        .game-score {
+            text-align: center;
+            font-size: 24px;
+            color: #667eea;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -439,48 +564,86 @@
                     <a href="#" onclick="showBolt(); closeDropdown(); return false;">⚡ Bolt</a>
                 </div>
             </li>
+            <li class="dropdown" id="gamesDropdown">
+                <a href="#" class="dropdown-toggle" id="gamesToggle">
+                    Games ▼
+                </a>
+                <div class="dropdown-menu">
+                    <a href="#" onclick="showGame('snake'); closeGamesDropdown(); return false;">🐍 Snake</a>
+                    <a href="#" onclick="showGame('pong'); closeGamesDropdown(); return false;">🏓 Pong</a>
+                    <a href="#" onclick="showGame('flappy'); closeGamesDropdown(); return false;">🐦 Flappy Bird</a>
+                </div>
+            </li>
             <li><a href="#" onclick="openAboutBlank(); return false;">🚀 Launch</a></li>
             <li><a href="#" onclick="showSettings(); return false;" class="settings-icon">⚙️</a></li>
         </ul>
     </nav>
+
+    <div class="tab-groups" id="tabGroups"></div>
 
     <div class="content" id="mainContent">
         <h1>Welcome to the Cosmos</h1>
         <p class="subtitle">Explore the infinite possibilities of space</p>
         <button class="cta-button" onclick="showPetezah()">Launch Petezah</button>
 
-        <div class="features">
-            <div class="feature-card" onclick="showPetezah()" style="cursor: pointer;">
-                <h3>🎮 Petezah</h3>
-                <p>Access your favorite gaming portal instantly</p>
+        <div id="pinnedSection"></div>
+
+        <div class="features" id="allSites">
+            <div class="feature-card" style="cursor: pointer;" data-site="petezah">
+                <div class="pin-button" onclick="togglePin('petezah', event)">📌</div>
+                <div onclick="showPetezah()">
+                    <h3>🎮 Petezah</h3>
+                    <p>Access your favorite gaming portal instantly</p>
+                </div>
             </div>
-            <div class="feature-card" onclick="showShadow()" style="cursor: pointer;">
-                <h3>🌑 Shadow</h3>
-                <p>Explore the mysterious shadow dimension</p>
+            <div class="feature-card" style="cursor: pointer;" data-site="shadow">
+                <div class="pin-button" onclick="togglePin('shadow', event)">📌</div>
+                <div onclick="showShadow()">
+                    <h3>🌑 Shadow</h3>
+                    <p>Explore the mysterious shadow dimension</p>
+                </div>
             </div>
-            <div class="feature-card" onclick="showInterstellar()" style="cursor: pointer;">
-                <h3>🌌 Interstellar</h3>
-                <p>Journey beyond the stars to distant galaxies</p>
+            <div class="feature-card" style="cursor: pointer;" data-site="interstellar">
+                <div class="pin-button" onclick="togglePin('interstellar', event)">📌</div>
+                <div onclick="showInterstellar()">
+                    <h3>🌌 Interstellar</h3>
+                    <p>Journey beyond the stars to distant galaxies</p>
+                </div>
             </div>
-            <div class="feature-card" onclick="showPizza()" style="cursor: pointer;">
-                <h3>🍕 Pizza</h3>
-                <p>Delicious math adventures await you</p>
+            <div class="feature-card" style="cursor: pointer;" data-site="pizza">
+                <div class="pin-button" onclick="togglePin('pizza', event)">📌</div>
+                <div onclick="showPizza()">
+                    <h3>🍕 Pizza</h3>
+                    <p>Delicious math adventures await you</p>
+                </div>
             </div>
-            <div class="feature-card" onclick="showMutipa()" style="cursor: pointer;">
-                <h3>🔬 Mutipa</h3>
-                <p>Discover experimental dimensions</p>
+            <div class="feature-card" style="cursor: pointer;" data-site="mutipa">
+                <div class="pin-button" onclick="togglePin('mutipa', event)">📌</div>
+                <div onclick="showMutipa()">
+                    <h3>🔬 Mutipa</h3>
+                    <p>Discover experimental dimensions</p>
+                </div>
             </div>
-            <div class="feature-card" onclick="showDoge()" style="cursor: pointer;">
-                <h3>🐕 Doge</h3>
-                <p>Much wow, such explore, very space</p>
+            <div class="feature-card" style="cursor: pointer;" data-site="doge">
+                <div class="pin-button" onclick="togglePin('doge', event)">📌</div>
+                <div onclick="showDoge()">
+                    <h3>🐕 Doge</h3>
+                    <p>Much wow, such explore, very space</p>
+                </div>
             </div>
-            <div class="feature-card" onclick="showNight()" style="cursor: pointer;">
-                <h3>🌙 Night</h3>
-                <p>Explore the darkness of the night sky</p>
+            <div class="feature-card" style="cursor: pointer;" data-site="night">
+                <div class="pin-button" onclick="togglePin('night', event)">📌</div>
+                <div onclick="showNight()">
+                    <h3>🌙 Night</h3>
+                    <p>Explore the darkness of the night sky</p>
+                </div>
             </div>
-            <div class="feature-card" onclick="showBolt()" style="cursor: pointer;">
-                <h3>⚡ Bolt</h3>
-                <p>Lightning fast adventures at warp speed</p>
+            <div class="feature-card" style="cursor: pointer;" data-site="bolt">
+                <div class="pin-button" onclick="togglePin('bolt', event)">📌</div>
+                <div onclick="showBolt()">
+                    <h3>⚡ Bolt</h3>
+                    <p>Lightning fast adventures at warp speed</p>
+                </div>
             </div>
         </div>
 
@@ -519,12 +682,45 @@
         <iframe id="boltFrame" allowfullscreen></iframe>
     </div>
 
+    <div class="content" id="gamesContent" style="display: none;">
+        <h1 id="gameTitle">Mini Games</h1>
+        <p class="subtitle">Quick games to play right here!</p>
+        <div class="game-score" id="gameScore">Score: 0</div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div class="game-controls">
+            <button class="cta-button" onclick="startGame()">Start Game</button>
+            <button class="cta-button" onclick="showHome()">Back to Home</button>
+        </div>
+        <p class="subtitle" style="margin-top: 20px;" id="gameInstructions"></p>
+    </div>
+
     <div class="content" id="settingsContent" style="display: none;">
         <h1>⚙️ Settings</h1>
         <p class="subtitle">Customize your experience</p>
 
         <div class="settings-panel">
-            <h2>🎭 Tab Cloaking</h2>
+            <h2>🚨 Panic Button</h2>
+            <p class="settings-description">Quickly switch to Google Classroom when you need to hide</p>
+            
+            <div class="panic-key-display">Current Panic Key: <span id="panicKeyDisplay">ESC</span></div>
+            
+            <p class="settings-description" style="margin-top: 15px;">
+                Press <strong>ESC</strong> anytime to instantly cloak as Google Classroom!<br>
+                Works on any page of the site.
+            </p>
+
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 10px;">Change Panic Key:</label>
+                <select id="panicKeySelect" class="custom-input" onchange="setPanicKey()" style="width: auto; display: inline-block;">
+                    <option value="Escape">ESC</option>
+                    <option value="Backquote">`/~ Key</option>
+                    <option value="Backslash">\| Key</option>
+                    <option value="F1">F1</option>
+                    <option value="F2">F2</option>
+                </select>
+            </div>
+
+            <h2 style="margin-top: 40px;">🎭 Tab Cloaking</h2>
             <p class="settings-description">Make this tab look like another website</p>
             
             <div class="cloak-options">
@@ -614,19 +810,147 @@
             starsContainer.appendChild(star);
         }
 
+        // Pinned sites management
+        let pinnedSites = JSON.parse(localStorage.getItem('pinnedSites') || '[]');
+
+        function togglePin(siteName, event) {
+            event.stopPropagation();
+            const index = pinnedSites.indexOf(siteName);
+            if (index > -1) {
+                pinnedSites.splice(index, 1);
+            } else {
+                pinnedSites.push(siteName);
+            }
+            localStorage.setItem('pinnedSites', JSON.stringify(pinnedSites));
+            updatePinnedDisplay();
+        }
+
+        function updatePinnedDisplay() {
+            const pinnedSection = document.getElementById('pinnedSection');
+            const allCards = document.querySelectorAll('.feature-card');
+            
+            // Update pin button states
+            allCards.forEach(card => {
+                const siteName = card.getAttribute('data-site');
+                const pinBtn = card.querySelector('.pin-button');
+                if (pinnedSites.includes(siteName)) {
+                    pinBtn.classList.add('pinned');
+                } else {
+                    pinBtn.classList.remove('pinned');
+                }
+            });
+
+            // Create pinned section
+            if (pinnedSites.length > 0) {
+                let html = '<div class="pinned-section"><h2>📌 Pinned Sites</h2><div class="features">';
+                allCards.forEach(card => {
+                    const siteName = card.getAttribute('data-site');
+                    if (pinnedSites.includes(siteName)) {
+                        html += card.outerHTML;
+                    }
+                });
+                html += '</div></div>';
+                pinnedSection.innerHTML = html;
+            } else {
+                pinnedSection.innerHTML = '';
+            }
+        }
+
+        // Tab groups management
+        let openTabs = [];
+        let currentTab = null;
+
+        function addTab(name, id) {
+            if (!openTabs.find(tab => tab.id === id)) {
+                openTabs.push({ name, id });
+            }
+            currentTab = id;
+            updateTabGroups();
+        }
+
+        function removeTab(id, event) {
+            event.stopPropagation();
+            const index = openTabs.findIndex(tab => tab.id === id);
+            if (index > -1) {
+                openTabs.splice(index, 1);
+                if (currentTab === id) {
+                    if (openTabs.length > 0) {
+                        switchToTab(openTabs[0].id);
+                    } else {
+                        showHome();
+                    }
+                }
+            }
+            updateTabGroups();
+        }
+
+        function switchToTab(id) {
+            currentTab = id;
+            const showFunctions = {
+                'petezah': showPetezah,
+                'shadow': showShadow,
+                'interstellar': showInterstellar,
+                'pizza': showPizza,
+                'mutipa': showMutipa,
+                'doge': showDoge,
+                'night': showNight,
+                'bolt': showBolt
+            };
+            if (showFunctions[id]) {
+                showFunctions[id](true);
+            }
+            updateTabGroups();
+        }
+
+        function updateTabGroups() {
+            const tabGroups = document.getElementById('tabGroups');
+            if (openTabs.length > 0) {
+                tabGroups.classList.add('active');
+                let html = '';
+                openTabs.forEach(tab => {
+                    const activeClass = tab.id === currentTab ? 'active-tab' : '';
+                    html += `<span class="tab-item ${activeClass}" onclick="switchToTab('${tab.id}')">
+                        ${tab.name} <span class="tab-close" onclick="removeTab('${tab.id}', event)">×</span>
+                    </span>`;
+                });
+                tabGroups.innerHTML = html;
+                
+                // Adjust iframe containers
+                document.querySelectorAll('.iframe-container').forEach(container => {
+                    container.classList.add('with-tabs');
+                });
+            } else {
+                tabGroups.classList.remove('active');
+                document.querySelectorAll('.iframe-container').forEach(container => {
+                    container.classList.remove('with-tabs');
+                });
+            }
+        }
+
         // Dropdown functionality
         const dropdownToggle = document.getElementById('dropdownToggle');
         const sitesDropdown = document.getElementById('sitesDropdown');
+        const gamesToggle = document.getElementById('gamesToggle');
+        const gamesDropdown = document.getElementById('gamesDropdown');
 
         dropdownToggle.addEventListener('click', function(e) {
             e.preventDefault();
             sitesDropdown.classList.toggle('active');
+            gamesDropdown.classList.remove('active');
         });
 
-        // Close dropdown when clicking outside
+        gamesToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            gamesDropdown.classList.toggle('active');
+            sitesDropdown.classList.remove('active');
+        });
+
         document.addEventListener('click', function(event) {
             if (!sitesDropdown.contains(event.target)) {
                 sitesDropdown.classList.remove('active');
+            }
+            if (!gamesDropdown.contains(event.target)) {
+                gamesDropdown.classList.remove('active');
             }
         });
 
@@ -634,7 +958,11 @@
             sitesDropdown.classList.remove('active');
         }
 
-        // Lazy load iframes - only load when clicked
+        function closeGamesDropdown() {
+            gamesDropdown.classList.remove('active');
+        }
+
+        // Lazy load iframes
         function loadIframe(iframeId, url) {
             const iframe = document.getElementById(iframeId);
             if (!iframe.src) {
@@ -645,6 +973,7 @@
         function hideAllContainers() {
             document.getElementById('mainContent').classList.add('hidden');
             document.getElementById('settingsContent').style.display = 'none';
+            document.getElementById('gamesContent').style.display = 'none';
             document.getElementById('iframeContainer').classList.remove('active');
             document.getElementById('shadowContainer').classList.remove('active');
             document.getElementById('interstellarContainer').classList.remove('active');
@@ -655,57 +984,68 @@
             document.getElementById('boltContainer').classList.remove('active');
         }
 
-        function showPetezah() {
+        function showPetezah(fromTab = false) {
             loadIframe('petezahFrame', 'https://tooeasybuddy.viiic.net/');
             hideAllContainers();
             document.getElementById('iframeContainer').classList.add('active');
+            if (!fromTab) addTab('🎮 Petezah', 'petezah');
         }
 
-        function showShadow() {
+        function showShadow(fromTab = false) {
             loadIframe('shadowFrame', 'https://ShadowMathLEbron.erc.hr');
             hideAllContainers();
             document.getElementById('shadowContainer').classList.add('active');
+            if (!fromTab) addTab('🌑 Shadow', 'shadow');
         }
 
-        function showInterstellar() {
+        function showInterstellar(fromTab = false) {
             loadIframe('interstellarFrame', 'https://mathchefart.erc.hr/');
             hideAllContainers();
             document.getElementById('interstellarContainer').classList.add('active');
+            if (!fromTab) addTab('🌌 Interstellar', 'interstellar');
         }
 
-        function showPizza() {
+        function showPizza(fromTab = false) {
             loadIframe('pizzaFrame', 'https://coolmathstuff.erc.hr/');
             hideAllContainers();
             document.getElementById('pizzaContainer').classList.add('active');
+            if (!fromTab) addTab('🍕 Pizza', 'pizza');
         }
 
-        function showMutipa() {
+        function showMutipa(fromTab = false) {
             loadIframe('mutipaFrame', 'https://level.lab.madhacker.biz/');
             hideAllContainers();
             document.getElementById('mutipaContainer').classList.add('active');
+            if (!fromTab) addTab('🔬 Mutipa', 'mutipa');
         }
 
-        function showDoge() {
+        function showDoge(fromTab = false) {
             loadIframe('dogeFrame', 'https://uknowimtuffboyyy.vercel.app/');
             hideAllContainers();
             document.getElementById('dogeContainer').classList.add('active');
+            if (!fromTab) addTab('🐕 Doge', 'doge');
         }
 
-        function showNight() {
+        function showNight(fromTab = false) {
             loadIframe('nightFrame', 'https://tuffmean.vercel.app/apps');
             hideAllContainers();
             document.getElementById('nightContainer').classList.add('active');
+            if (!fromTab) addTab('🌙 Night', 'night');
         }
 
-        function showBolt() {
+        function showBolt(fromTab = false) {
             loadIframe('boltFrame', 'https://tuffboy56.vercel.app/');
             hideAllContainers();
             document.getElementById('boltContainer').classList.add('active');
+            if (!fromTab) addTab('⚡ Bolt', 'bolt');
         }
 
         function showHome() {
             hideAllContainers();
             document.getElementById('mainContent').classList.remove('hidden');
+            openTabs = [];
+            currentTab = null;
+            updateTabGroups();
         }
 
         function showSettings() {
@@ -726,6 +1066,35 @@
             win.document.body.appendChild(iframe);
         }
 
+        // Panic button
+        let panicKey = localStorage.getItem('panicKey') || 'Escape';
+
+        function setPanicKey() {
+            panicKey = document.getElementById('panicKeySelect').value;
+            localStorage.setItem('panicKey', panicKey);
+            updatePanicKeyDisplay();
+        }
+
+        function updatePanicKeyDisplay() {
+            const keyNames = {
+                'Escape': 'ESC',
+                'Backquote': '`/~',
+                'Backslash': '\\|',
+                'F1': 'F1',
+                'F2': 'F2'
+            };
+            document.getElementById('panicKeyDisplay').textContent = keyNames[panicKey] || panicKey;
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.code === panicKey) {
+                e.preventDefault();
+                cloakAs('Home', 'https://ssl.gstatic.com/classroom/ic_product_classroom_32.png');
+                window.location.href = 'https://classroom.google.com';
+            }
+        });
+
+        // Cloaking functions
         function cloakAs(title, iconUrl) {
             document.title = title;
             setFavicon(iconUrl);
@@ -761,42 +1130,20 @@
         // Theme functions
         function setTheme(theme) {
             const body = document.body;
-            // Remove all theme classes
             body.classList.remove('ocean-theme', 'sunset-theme', 'forest-theme', 'neon-theme', 'midnight-theme');
             
-            // Apply new theme
             if (theme !== 'default') {
                 body.classList.add(theme + '-theme');
             }
             
-            // Save theme preference
             localStorage.setItem('selectedTheme', theme);
         }
 
-        // Load saved theme on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = localStorage.getItem('selectedTheme');
-            if (savedTheme && savedTheme !== 'default') {
-                document.body.classList.add(savedTheme + '-theme');
-            }
-            
-            // Load performance mode setting
-            const performanceMode = localStorage.getItem('performanceMode');
-            if (performanceMode === 'true') {
-                document.body.classList.add('performance-mode');
-                updatePerformanceButton(true);
-            }
-        });
-
-        // Performance mode functions
+        // Performance mode
         function togglePerformanceMode() {
             const body = document.body;
             const isEnabled = body.classList.toggle('performance-mode');
-            
-            // Save preference
             localStorage.setItem('performanceMode', isEnabled);
-            
-            // Update button text
             updatePerformanceButton(isEnabled);
         }
 
@@ -810,6 +1157,283 @@
                 }
             }
         }
+
+        // Mini Games
+        let currentGame = null;
+        let gameScore = 0;
+        let gameLoop = null;
+
+        function showGame(gameName) {
+            hideAllContainers();
+            document.getElementById('gamesContent').style.display = 'block';
+            currentGame = gameName;
+            gameScore = 0;
+            
+            const titles = {
+                'snake': '🐍 Snake Game',
+                'pong': '🏓 Pong Game',
+                'flappy': '🐦 Flappy Bird'
+            };
+            
+            const instructions = {
+                'snake': 'Use Arrow Keys to move. Don\'t hit the walls or yourself!',
+                'pong': 'Use Arrow Up/Down to move paddle. Don\'t let the ball pass!',
+                'flappy': 'Press SPACE to flap. Avoid the obstacles!'
+            };
+            
+            document.getElementById('gameTitle').textContent = titles[gameName];
+            document.getElementById('gameInstructions').textContent = instructions[gameName];
+            document.getElementById('gameScore').textContent = 'Score: 0';
+        }
+
+        function startGame() {
+            if (gameLoop) clearInterval(gameLoop);
+            gameScore = 0;
+            
+            if (currentGame === 'snake') startSnake();
+            else if (currentGame === 'pong') startPong();
+            else if (currentGame === 'flappy') startFlappy();
+        }
+
+        // Snake Game
+        let snake, food, dx, dy, changingDirection;
+        
+        function startSnake() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const gridSize = 20;
+            snake = [{x: 200, y: 200}];
+            food = {x: 100, y: 100};
+            dx = gridSize;
+            dy = 0;
+            changingDirection = false;
+            
+            document.addEventListener('keydown', changeSnakeDirection);
+            
+            gameLoop = setInterval(() => {
+                moveSnake();
+                if (checkSnakeCollision()) {
+                    clearInterval(gameLoop);
+                    alert('Game Over! Score: ' + gameScore);
+                    return;
+                }
+                drawSnake(ctx, canvas, gridSize);
+            }, 100);
+        }
+
+        function changeSnakeDirection(e) {
+            const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40;
+            if (changingDirection) return;
+            changingDirection = true;
+            
+            if (e.keyCode === LEFT && dx === 0) { dx = -20; dy = 0; }
+            else if (e.keyCode === UP && dy === 0) { dx = 0; dy = -20; }
+            else if (e.keyCode === RIGHT && dx === 0) { dx = 20; dy = 0; }
+            else if (e.keyCode === DOWN && dy === 0) { dx = 0; dy = 20; }
+        }
+
+        function moveSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+            snake.unshift(head);
+            
+            if (head.x === food.x && head.y === food.y) {
+                gameScore += 10;
+                document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+                food = {
+                    x: Math.floor(Math.random() * 20) * 20,
+                    y: Math.floor(Math.random() * 20) * 20
+                };
+            } else {
+                snake.pop();
+            }
+            changingDirection = false;
+        }
+
+        function checkSnakeCollision() {
+            const head = snake[0];
+            if (head.x < 0 || head.x >= 400 || head.y < 0 || head.y >= 400) return true;
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) return true;
+            }
+            return false;
+        }
+
+        function drawSnake(ctx, canvas, gridSize) {
+            ctx.fillStyle = '#0a0e27';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#667eea';
+            snake.forEach(segment => {
+                ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
+            });
+            
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fillRect(food.x, food.y, gridSize, gridSize);
+        }
+
+        // Pong Game
+        let paddle, ball, ballDx, ballDy;
+        
+        function startPong() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            paddle = {x: 10, y: 150, width: 10, height: 80};
+            ball = {x: 200, y: 200, radius: 8};
+            ballDx = 3;
+            ballDy = 3;
+            
+            document.addEventListener('keydown', movePaddle);
+            
+            gameLoop = setInterval(() => {
+                moveBall(canvas);
+                drawPong(ctx, canvas);
+            }, 1000/60);
+        }
+
+        function movePaddle(e) {
+            const UP = 38, DOWN = 40;
+            if (e.keyCode === UP && paddle.y > 0) paddle.y -= 20;
+            if (e.keyCode === DOWN && paddle.y < 320) paddle.y += 20;
+        }
+
+        function moveBall(canvas) {
+            ball.x += ballDx;
+            ball.y += ballDy;
+            
+            if (ball.y <= 0 || ball.y >= canvas.height) ballDy = -ballDy;
+            
+            if (ball.x <= paddle.x + paddle.width && 
+                ball.y >= paddle.y && 
+                ball.y <= paddle.y + paddle.height) {
+                ballDx = -ballDx;
+                gameScore += 10;
+                document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+            }
+            
+            if (ball.x <= 0) {
+                clearInterval(gameLoop);
+                alert('Game Over! Score: ' + gameScore);
+            }
+            
+            if (ball.x >= canvas.width) ballDx = -ballDx;
+        }
+
+        function drawPong(ctx, canvas) {
+            ctx.fillStyle = '#0a0e27';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#667eea';
+            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+            
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Flappy Bird
+        let bird, pipes, gravity, jump, pipeGap;
+        
+        function startFlappy() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            bird = {x: 50, y: 200, radius: 15, velocity: 0};
+            pipes = [];
+            gravity = 0.5;
+            jump = -8;
+            pipeGap = 150;
+            
+            document.addEventListener('keydown', flapBird);
+            
+            let frameCount = 0;
+            gameLoop = setInterval(() => {
+                frameCount++;
+                if (frameCount % 90 === 0) {
+                    const pipeY = Math.random() * (canvas.height - pipeGap - 100) + 50;
+                    pipes.push({x: canvas.width, y: pipeY});
+                }
+                
+                bird.velocity += gravity;
+                bird.y += bird.velocity;
+                
+                pipes.forEach(pipe => {
+                    pipe.x -= 2;
+                    if (pipe.x + 50 === bird.x) {
+                        gameScore += 10;
+                        document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+                    }
+                });
+                
+                pipes = pipes.filter(pipe => pipe.x > -50);
+                
+                if (checkFlappyCollision(canvas)) {
+                    clearInterval(gameLoop);
+                    alert('Game Over! Score: ' + gameScore);
+                    return;
+                }
+                
+                drawFlappy(ctx, canvas);
+            }, 1000/60);
+        }
+
+        function flapBird(e) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                bird.velocity = jump;
+            }
+        }
+
+        function checkFlappyCollision(canvas) {
+            if (bird.y <= 0 || bird.y >= canvas.height) return true;
+            
+            for (let pipe of pipes) {
+                if (bird.x + bird.radius > pipe.x && bird.x - bird.radius < pipe.x + 50) {
+                    if (bird.y - bird.radius < pipe.y || bird.y + bird.radius > pipe.y + pipeGap) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function drawFlappy(ctx, canvas) {
+            ctx.fillStyle = '#0a0e27';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#4CAF50';
+            pipes.forEach(pipe => {
+                ctx.fillRect(pipe.x, 0, 50, pipe.y);
+                ctx.fillRect(pipe.x, pipe.y + pipeGap, 50, canvas.height);
+            });
+        }
+
+        // Load saved settings
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('selectedTheme');
+            if (savedTheme && savedTheme !== 'default') {
+                document.body.classList.add(savedTheme + '-theme');
+            }
+            
+            const performanceMode = localStorage.getItem('performanceMode');
+            if (performanceMode === 'true') {
+                document.body.classList.add('performance-mode');
+                updatePerformanceButton(true);
+            }
+            
+            const savedPanicKey = localStorage.getItem('panicKey');
+            if (savedPanicKey) {
+                panicKey = savedPanicKey;
+                document.getElementById('panicKeySelect').value = savedPanicKey;
+                updatePanicKeyDisplay();
+            }
+            
+            updatePinnedDisplay();
+        });
     </script>
 </body>
 </html>
