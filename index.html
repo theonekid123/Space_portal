@@ -17,6 +17,28 @@
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* Theme Classes */
+        body.ocean-theme {
+            background: linear-gradient(to bottom, #0a192f 0%, #1a3a52 50%, #2a5a7a 100%);
+        }
+
+        body.sunset-theme {
+            background: linear-gradient(to bottom, #1a0a2e 0%, #3d1e6d 50%, #8b3a62 100%);
+        }
+
+        body.forest-theme {
+            background: linear-gradient(to bottom, #0d1b0e 0%, #1a3d1f 50%, #2d5a3d 100%);
+        }
+
+        body.neon-theme {
+            background: linear-gradient(to bottom, #0a0a0a 0%, #1a0a2e 50%, #2e0a3d 100%);
+        }
+
+        body.midnight-theme {
+            background: linear-gradient(to bottom, #000000 0%, #0f0f1e 50%, #1a1a2e 100%);
         }
 
         /* Animated stars background */
@@ -30,6 +52,10 @@
             z-index: 0;
         }
 
+        body.performance-mode .stars {
+            display: none;
+        }
+
         .star {
             position: absolute;
             width: 2px;
@@ -37,6 +63,23 @@
             background: white;
             border-radius: 50%;
             animation: twinkle 3s infinite;
+        }
+
+        body.performance-mode .star {
+            animation: none;
+        }
+
+        body.performance-mode * {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        body.performance-mode .feature-card:hover {
+            transform: none;
+        }
+
+        body.performance-mode .cta-button:hover {
+            transform: none;
         }
 
         @keyframes twinkle {
@@ -516,6 +559,46 @@
                 <input type="text" id="customIcon" placeholder="Favicon URL" class="custom-input">
                 <button class="cta-button" onclick="customCloak()" style="margin-top: 20px;">Apply Custom Cloak</button>
             </div>
+
+            <div class="custom-cloak" style="margin-top: 40px;">
+                <h2>🎨 Themes</h2>
+                <p class="settings-description">Choose your visual theme</p>
+                <div class="cloak-options">
+                    <button class="cloak-btn" onclick="setTheme('default')">
+                        🌌 Space (Default)
+                    </button>
+                    <button class="cloak-btn" onclick="setTheme('ocean')">
+                        🌊 Ocean Depths
+                    </button>
+                    <button class="cloak-btn" onclick="setTheme('sunset')">
+                        🌅 Sunset Glow
+                    </button>
+                    <button class="cloak-btn" onclick="setTheme('forest')">
+                        🌲 Forest Night
+                    </button>
+                    <button class="cloak-btn" onclick="setTheme('neon')">
+                        💜 Neon Dreams
+                    </button>
+                    <button class="cloak-btn" onclick="setTheme('midnight')">
+                        🌑 Midnight Black
+                    </button>
+                </div>
+            </div>
+
+            <div class="custom-cloak" style="margin-top: 40px;">
+                <h2>⚡ Performance Mode</h2>
+                <p class="settings-description">Disable animations for better performance on slower devices</p>
+                <div class="cloak-options">
+                    <button class="cloak-btn" id="performanceBtn" onclick="togglePerformanceMode()">
+                        <span id="performanceStatus">❌ Performance Mode: OFF</span>
+                    </button>
+                </div>
+                <p class="settings-description" style="margin-top: 15px; font-size: 14px; opacity: 0.7;">
+                    • Disables star animations<br>
+                    • Removes transitions and hover effects<br>
+                    • Improves loading speed and responsiveness
+                </p>
+            </div>
         </div>
     </div>
 
@@ -673,6 +756,59 @@
                 document.head.appendChild(link);
             }
             link.href = url || 'data:,';
+        }
+
+        // Theme functions
+        function setTheme(theme) {
+            const body = document.body;
+            // Remove all theme classes
+            body.classList.remove('ocean-theme', 'sunset-theme', 'forest-theme', 'neon-theme', 'midnight-theme');
+            
+            // Apply new theme
+            if (theme !== 'default') {
+                body.classList.add(theme + '-theme');
+            }
+            
+            // Save theme preference
+            localStorage.setItem('selectedTheme', theme);
+        }
+
+        // Load saved theme on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('selectedTheme');
+            if (savedTheme && savedTheme !== 'default') {
+                document.body.classList.add(savedTheme + '-theme');
+            }
+            
+            // Load performance mode setting
+            const performanceMode = localStorage.getItem('performanceMode');
+            if (performanceMode === 'true') {
+                document.body.classList.add('performance-mode');
+                updatePerformanceButton(true);
+            }
+        });
+
+        // Performance mode functions
+        function togglePerformanceMode() {
+            const body = document.body;
+            const isEnabled = body.classList.toggle('performance-mode');
+            
+            // Save preference
+            localStorage.setItem('performanceMode', isEnabled);
+            
+            // Update button text
+            updatePerformanceButton(isEnabled);
+        }
+
+        function updatePerformanceButton(isEnabled) {
+            const statusElement = document.getElementById('performanceStatus');
+            if (statusElement) {
+                if (isEnabled) {
+                    statusElement.textContent = '✅ Performance Mode: ON';
+                } else {
+                    statusElement.textContent = '❌ Performance Mode: OFF';
+                }
+            }
         }
     </script>
 </body>
