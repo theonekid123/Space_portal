@@ -351,6 +351,15 @@
             border: none;
         }
 
+        /* Popup blocker - allow only Mutipa */
+        .iframe-container:not(#mutipaContainer) iframe {
+            sandbox: allow-same-origin allow-scripts allow-forms;
+        }
+
+        #mutipaContainer iframe {
+            sandbox: allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -1043,6 +1052,12 @@
             document.getElementById('dogeContainer').classList.remove('active');
             document.getElementById('nightContainer').classList.remove('active');
             document.getElementById('boltContainer').classList.remove('active');
+            
+            // Hide custom site containers
+            customSites.forEach(site => {
+                const container = document.getElementById(site.id + 'Container');
+                if (container) container.classList.remove('active');
+            });
         }
 
         function showPetezah(fromTab = false) {
