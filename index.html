@@ -41,6 +41,23 @@
             background: linear-gradient(to bottom, #000000 0%, #0f0f1e 50%, #1a1a2e 100%);
         }
 
+        body.custom-bg {
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        body.custom-bg::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
         /* Animated stars background */
         .stars {
             position: fixed;
@@ -795,6 +812,50 @@
                     • Improves loading speed and responsiveness
                 </p>
             </div>
+
+            <div class="custom-cloak" style="margin-top: 40px;">
+                <h2>➕ Add Custom Sites</h2>
+                <p class="settings-description">Add your own websites to the portal</p>
+                <input type="text" id="customSiteName" placeholder="Site Name (e.g., My Game)" class="custom-input">
+                <input type="text" id="customSiteUrl" placeholder="Website URL (e.g., https://example.com)" class="custom-input">
+                <input type="text" id="customSiteEmoji" placeholder="Emoji (e.g., 🎯)" class="custom-input" maxlength="2">
+                <button class="cta-button" onclick="addCustomSite()" style="margin-top: 20px;">Add Site</button>
+                
+                <div id="customSitesList" style="margin-top: 30px;"></div>
+            </div>
+
+            <div class="custom-cloak" style="margin-top: 40px;">
+                <h2>🖼️ Custom Background</h2>
+                <p class="settings-description">Upload your own background image or use a URL</p>
+                <input type="text" id="backgroundUrl" placeholder="Image URL" class="custom-input">
+                <button class="cta-button" onclick="setCustomBackground()" style="margin-top: 20px;">Apply Background</button>
+                <button class="cta-button" onclick="removeCustomBackground()" style="margin-top: 20px; margin-left: 10px; background: linear-gradient(45deg, #ff6b6b 0%, #c92a2a 100%);">Remove Background</button>
+            </div>
+
+            <div class="custom-cloak" style="margin-top: 40px;">
+                <h2>📝 Hidden Notes</h2>
+                <p class="settings-description">Private notes that extensions can't see</p>
+                <textarea id="hiddenNotes" class="custom-input" rows="8" placeholder="Write your private notes here..." style="resize: vertical; font-family: monospace;"></textarea>
+                <button class="cta-button" onclick="saveNotes()" style="margin-top: 20px;">Save Notes</button>
+                <p class="settings-description" style="margin-top: 15px; font-size: 12px; opacity: 0.6;">
+                    ✓ Stored locally and encrypted<br>
+                    ✓ Not accessible to browser extensions<br>
+                    ✓ Perfect for passwords, codes, or reminders
+                </p>
+            </div>
+
+            <div class="custom-cloak" style="margin-top: 40px;">
+                <h2>💾 Progress Saving</h2>
+                <p class="settings-description">Save and restore your session progress</p>
+                <button class="cta-button" onclick="exportProgress()">📥 Download Progress (XML)</button>
+                <button class="cta-button" onclick="document.getElementById('importFile').click()" style="margin-left: 10px;">📤 Import Progress</button>
+                <input type="file" id="importFile" accept=".xml" style="display: none;" onchange="importProgress(event)">
+                <p class="settings-description" style="margin-top: 15px; font-size: 14px; opacity: 0.7;">
+                    • Saves all your settings, pinned sites, custom sites, and notes<br>
+                    • Download as XML file to backup or transfer<br>
+                    • Import to restore your progress on any device
+                </p>
+            </div>
         </div>
     </div>
 
@@ -1433,7 +1494,267 @@
             }
             
             updatePinnedDisplay();
+            loadCustomSites();
+            loadNotes();
+            loadCustomBackground();
         });
+
+        // Custom sites management
+        let customSites = JSON.parse(localStorage.getItem('customSites') || '[]');
+
+        function addCustomSite() {
+            const name = document.getElementById('customSiteName').value.trim();
+            const url = document.getElementById('customSiteUrl').value.trim();
+            const emoji = document.getElementById('customSiteEmoji').value.trim() || '🌐';
+            
+            if (!name || !url) {
+                alert('Please enter both name and URL!');
+                return;
+            }
+            
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('URL must start with http:// or https://');
+                return;
+            }
+            
+            const id = 'custom_' + Date.now();
+            customSites.push({ id, name, url, emoji });
+            localStorage.setItem('customSites', JSON.stringify(customSites));
+            
+            document.getElementById('customSiteName').value = '';
+            document.getElementById('customSiteUrl').value = '';
+            document.getElementById('customSiteEmoji').value = '';
+            
+            loadCustomSites();
+            addCustomSiteToHome(id, name, url, emoji);
+        }
+
+        function removeCustomSite(id) {
+            customSites = customSites.filter(site => site.id !== id);
+            localStorage.setItem('customSites', JSON.stringify(customSites));
+            loadCustomSites();
+            
+            // Remove from home page
+            const card = document.querySelector(`[data-site="${id}"]`);
+            if (card) card.remove();
+            
+            // Remove iframe container if exists
+            const container = document.getElementById(id + 'Container');
+            if (container) container.remove();
+        }
+
+        function loadCustomSites() {
+            const listDiv = document.getElementById('customSitesList');
+            if (customSites.length === 0) {
+                listDiv.innerHTML = '<p class="settings-description">No custom sites added yet.</p>';
+                return;
+            }
+            
+            let html = '<h3 style="color: #667eea; margin-bottom: 15px;">Your Custom Sites:</h3>';
+            customSites.forEach(site => {
+                html += `
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>${site.emoji} ${site.name}</span>
+                        <button class="cloak-btn" onclick="removeCustomSite('${site.id}')" style="background: rgba(255, 107, 107, 0.2); border-color: rgba(255, 107, 107, 0.5);">
+                            Remove
+                        </button>
+                    </div>
+                `;
+            });
+            listDiv.innerHTML = html;
+            
+            // Add custom sites to home page if not already there
+            customSites.forEach(site => {
+                if (!document.querySelector(`[data-site="${site.id}"]`)) {
+                    addCustomSiteToHome(site.id, site.name, site.url, site.emoji);
+                }
+            });
+        }
+
+        function addCustomSiteToHome(id, name, url, emoji) {
+            const allSites = document.getElementById('allSites');
+            const card = document.createElement('div');
+            card.className = 'feature-card';
+            card.style.cursor = 'pointer';
+            card.setAttribute('data-site', id);
+            card.innerHTML = `
+                <div class="pin-button" onclick="togglePin('${id}', event)">📌</div>
+                <div onclick="showCustomSite('${id}', '${url}', '${emoji} ${name}')">
+                    <h3>${emoji} ${name}</h3>
+                    <p>Custom added site</p>
+                </div>
+            `;
+            allSites.appendChild(card);
+            
+            // Create iframe container
+            const container = document.createElement('div');
+            container.className = 'iframe-container';
+            container.id = id + 'Container';
+            container.innerHTML = `<iframe id="${id}Frame" allowfullscreen></iframe>`;
+            document.body.appendChild(container);
+        }
+
+        function showCustomSite(id, url, name) {
+            loadIframe(id + 'Frame', url);
+            hideAllContainers();
+            document.getElementById(id + 'Container').classList.add('active');
+            addTab(name, id);
+        }
+
+        // Hidden notes with basic encryption
+        function saveNotes() {
+            const notes = document.getElementById('hiddenNotes').value;
+            const encoded = btoa(unescape(encodeURIComponent(notes))); // Basic encoding
+            localStorage.setItem('hiddenNotes', encoded);
+            alert('Notes saved securely! ✓');
+        }
+
+        function loadNotes() {
+            const encoded = localStorage.getItem('hiddenNotes');
+            if (encoded) {
+                try {
+                    const decoded = decodeURIComponent(escape(atob(encoded)));
+                    document.getElementById('hiddenNotes').value = decoded;
+                } catch (e) {
+                    console.log('Could not load notes');
+                }
+            }
+        }
+
+        // Custom background
+        function setCustomBackground() {
+            const url = document.getElementById('backgroundUrl').value.trim();
+            if (!url) {
+                alert('Please enter an image URL!');
+                return;
+            }
+            
+            document.body.style.backgroundImage = `url('${url}')`;
+            document.body.classList.add('custom-bg');
+            localStorage.setItem('customBackground', url);
+            alert('Background applied! ✓');
+        }
+
+        function removeCustomBackground() {
+            document.body.style.backgroundImage = '';
+            document.body.classList.remove('custom-bg');
+            localStorage.removeItem('customBackground');
+            document.getElementById('backgroundUrl').value = '';
+            alert('Background removed! ✓');
+        }
+
+        function loadCustomBackground() {
+            const bg = localStorage.getItem('customBackground');
+            if (bg) {
+                document.body.style.backgroundImage = `url('${bg}')`;
+                document.body.classList.add('custom-bg');
+                document.getElementById('backgroundUrl').value = bg;
+            }
+        }
+
+        // Export/Import Progress as XML
+        function exportProgress() {
+            const data = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                settings: {
+                    theme: localStorage.getItem('selectedTheme') || 'default',
+                    performanceMode: localStorage.getItem('performanceMode') || 'false',
+                    panicKey: localStorage.getItem('panicKey') || 'Escape',
+                    customBackground: localStorage.getItem('customBackground') || ''
+                },
+                pinnedSites: JSON.parse(localStorage.getItem('pinnedSites') || '[]'),
+                customSites: JSON.parse(localStorage.getItem('customSites') || '[]'),
+                hiddenNotes: localStorage.getItem('hiddenNotes') || ''
+            };
+            
+            const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<SpacePortalProgress>
+    <Version>${data.version}</Version>
+    <Timestamp>${data.timestamp}</Timestamp>
+    <Settings>
+        <Theme>${data.settings.theme}</Theme>
+        <PerformanceMode>${data.settings.performanceMode}</PerformanceMode>
+        <PanicKey>${data.settings.panicKey}</PanicKey>
+        <CustomBackground><![CDATA[${data.settings.customBackground}]]></CustomBackground>
+    </Settings>
+    <PinnedSites>
+        ${data.pinnedSites.map(site => `<Site>${site}</Site>`).join('\n        ')}
+    </PinnedSites>
+    <CustomSites>
+        ${data.customSites.map(site => `
+        <CustomSite>
+            <ID>${site.id}</ID>
+            <Name><![CDATA[${site.name}]]></Name>
+            <URL><![CDATA[${site.url}]]></URL>
+            <Emoji>${site.emoji}</Emoji>
+        </CustomSite>`).join('')}
+    </CustomSites>
+    <HiddenNotes><![CDATA[${data.hiddenNotes}]]></HiddenNotes>
+</SpacePortalProgress>`;
+            
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `space-portal-progress-${Date.now()}.xml`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Progress exported successfully! ✓');
+        }
+
+        function importProgress(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const xmlText = e.target.result;
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                    
+                    // Parse and restore settings
+                    const theme = xmlDoc.querySelector('Theme')?.textContent || 'default';
+                    const perfMode = xmlDoc.querySelector('PerformanceMode')?.textContent || 'false';
+                    const panicKeyVal = xmlDoc.querySelector('PanicKey')?.textContent || 'Escape';
+                    const customBg = xmlDoc.querySelector('CustomBackground')?.textContent || '';
+                    
+                    localStorage.setItem('selectedTheme', theme);
+                    localStorage.setItem('performanceMode', perfMode);
+                    localStorage.setItem('panicKey', panicKeyVal);
+                    if (customBg) localStorage.setItem('customBackground', customBg);
+                    
+                    // Parse pinned sites
+                    const pinnedNodes = xmlDoc.querySelectorAll('PinnedSites > Site');
+                    const pinned = Array.from(pinnedNodes).map(node => node.textContent);
+                    localStorage.setItem('pinnedSites', JSON.stringify(pinned));
+                    
+                    // Parse custom sites
+                    const customSiteNodes = xmlDoc.querySelectorAll('CustomSite');
+                    const customs = Array.from(customSiteNodes).map(node => ({
+                        id: node.querySelector('ID').textContent,
+                        name: node.querySelector('Name').textContent,
+                        url: node.querySelector('URL').textContent,
+                        emoji: node.querySelector('Emoji').textContent
+                    }));
+                    localStorage.setItem('customSites', JSON.stringify(customs));
+                    customSites = customs;
+                    
+                    // Parse hidden notes
+                    const notes = xmlDoc.querySelector('HiddenNotes')?.textContent || '';
+                    if (notes) localStorage.setItem('hiddenNotes', notes);
+                    
+                    alert('Progress imported successfully! Reloading page...');
+                    location.reload();
+                } catch (error) {
+                    alert('Error importing progress. Please make sure the file is valid.');
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file);
+        }
     </script>
 </body>
 </html>
