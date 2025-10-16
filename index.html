@@ -3,1773 +3,480 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Portal</title>
+    <title>🚀 Stellar Hub 🪐</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=400;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /*
+        ========================================
+        1. SPACE THEME CSS Variables
+        ========================================
+        */
+        :root {
+            /* Light Mode (Still Space-Themed) */
+            --bg-page: #151a30; /* Deep Space Blue */
+            --bg-card: #222b45; /* Dark Card Base */
+            --bg-card-secondary: #2c3558; /* Slightly Lighter Hover */
+            --bg-navbar: #0f1626; /* Deepest Navy for Navbar */
+            --color-text: #e4e6f8; /* Pale text */
+            --color-primary: #5c72ff; /* Primary Neon Blue/Purple */
+            --color-link-hover: #4e63f5;
+            --color-card-text: #8dc6ff; /* Star Highlight */
+            --color-card-url: #a0a0c0;
+            --border-color: #3b476e;
+            --shadow-base: rgba(0, 0, 0, 0.4);
+            --shadow-hover: rgba(92, 114, 255, 0.3);
+            --settings-info-bg: #4a4000;
+            --settings-info-border: #e0ac00;
+            --particle-color: rgba(255, 255, 255, 0.8); /* Bright stars */
         }
 
+        body.dark-mode {
+            /* Dark Mode (Minimal Change, just deeper/more contrast) */
+            --bg-page: #0b0f1a;
+            --bg-card: #1c2235;
+            --bg-card-secondary: #252b45;
+            --bg-navbar: #070a13;
+            --color-text: #ffffff;
+            --color-primary: #7d90ff;
+            --color-link-hover: #5c72ff;
+            --color-card-text: #b3d9ff;
+            --border-color: #303a5c;
+            --particle-color: rgba(255, 255, 255, 0.5); /* Dimmer stars for background */
+        }
+
+        /*
+        ========================================
+        2. Base Styles
+        ========================================
+        */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
-            color: #fff;
+            font-family: 'Poppins', sans-serif; 
+            margin: 0;
+            padding-top: 80px;
             min-height: 100vh;
-            overflow-x: hidden;
-            transition: background 0.5s ease;
-        }
-
-        /* Theme Classes */
-        body.ocean-theme {
-            background: linear-gradient(to bottom, #0a192f 0%, #1a3a52 50%, #2a5a7a 100%);
-        }
-
-        body.sunset-theme {
-            background: linear-gradient(to bottom, #1a0a2e 0%, #3d1e6d 50%, #8b3a62 100%);
-        }
-
-        body.forest-theme {
-            background: linear-gradient(to bottom, #0d1b0e 0%, #1a3d1f 50%, #2d5a3d 100%);
-        }
-
-        body.neon-theme {
-            background: linear-gradient(to bottom, #0a0a0a 0%, #1a0a2e 50%, #2e0a3d 100%);
-        }
-
-        body.midnight-theme {
-            background: linear-gradient(to bottom, #000000 0%, #0f0f1e 50%, #1a1a2e 100%);
-        }
-
-        body.custom-bg {
+            background-color: var(--bg-page);
+            color: var(--color-text);
+            transition: background-color 0.5s, color 0.5s;
+            position: relative;
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
+            background-attachment: fixed; /* Ensures particles/image stays put */
         }
 
-        body.custom-bg::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-        }
-
-        /* Animated stars background */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body.performance-mode .stars {
-            display: none;
-        }
-
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-
-        body.performance-mode .star {
-            animation: none;
-        }
-
-        body.performance-mode * {
-            animation: none !important;
-            transition: none !important;
-        }
-
-        body.performance-mode .feature-card:hover {
-            transform: none;
-        }
-
-        body.performance-mode .cta-button:hover {
-            transform: none;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        /* Navigation */
-        nav {
-            position: relative;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            background: rgba(10, 14, 39, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-links > li > a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 5px 10px;
-        }
-
-        .nav-links > li > a:hover {
-            color: #667eea;
-        }
-
-        /* Dropdown Menu */
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-toggle {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            padding: 10px 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(102, 126, 234, 0.2);
-            border-radius: 8px;
-            border: 1px solid rgba(102, 126, 234, 0.3);
-        }
-
-        .dropdown-toggle:hover {
-            background: rgba(102, 126, 234, 0.3);
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin-top: 10px;
-            background: rgba(10, 14, 39, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 10px 0;
-            min-width: 200px;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .dropdown.active .dropdown-menu {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .dropdown-menu a {
-            display: block;
-            padding: 12px 20px;
-            color: #fff;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-menu a:hover {
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-        }
-
-        .settings-icon {
-            font-size: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .settings-icon:hover {
-            transform: rotate(90deg);
-        }
-
-        /* Tab Groups Bar */
-        .tab-groups {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10, 14, 39, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            z-index: 200;
-            display: none;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-
-        .tab-groups.active {
-            display: block;
-        }
-
-        .tab-item {
-            display: inline-block;
-            padding: 8px 16px;
-            margin-right: 10px;
-            background: rgba(102, 126, 234, 0.2);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .tab-item:hover {
-            background: rgba(102, 126, 234, 0.3);
-        }
-
-        .tab-item.active-tab {
-            background: rgba(102, 126, 234, 0.5);
-            border-color: rgba(102, 126, 234, 0.8);
-        }
-
-        .tab-close {
-            margin-left: 8px;
-            color: #ff6b6b;
-            font-weight: bold;
-        }
-
-        /* Main content */
         .content {
-            position: relative;
-            z-index: 10;
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 80px 50px;
-            text-align: center;
+            margin: 20px auto;
+            padding: 0 20px;
+            z-index: 5;
+            position: relative;
         }
 
-        .content.hidden {
-            display: none;
+        /*
+        ========================================
+        3. Navigation Bar (Tabs)
+        ========================================
+        */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-navbar);
+            box-shadow: 0 4px 12px var(--shadow-base);
+            z-index: 1000;
+            display: flex;
+            padding: 0;
         }
-
-        h1 {
-            font-size: 64px;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeIn 1s ease-in;
-        }
-
-        .subtitle {
-            font-size: 20px;
-            color: #b8b8d1;
-            margin-bottom: 50px;
-            animation: fadeIn 1.5s ease-in;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 15px 40px;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
+        
+        .navbar button {
+            background-color: transparent;
+            color: var(--color-text);
+            border: none;
+            padding: 15px 30px;
             font-size: 18px;
             font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            animation: fadeIn 2s ease-in;
+            transition: background-color 0.3s, transform 0.1s;
         }
 
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        .navbar button:hover:not(.active) {
+            background-color: var(--color-link-hover);
+        }
+        
+        .navbar button.active {
+            background-color: var(--bg-card-secondary); /* Active tab color */
+            border-bottom: 4px solid var(--color-primary); /* Neon highlight */
+            padding-bottom: 11px;
         }
 
-        /* Iframe container */
-        .iframe-container {
+        /*
+        ========================================
+        4. Tab Content & Cards
+        ========================================
+        */
+        .category-section {
             display: none;
-            position: fixed;
-            top: 71px;
-            left: 0;
-            width: 100%;
-            height: calc(100vh - 71px);
-            z-index: 50;
-            background: #0a0e27;
+            padding: 40px;
+            margin-bottom: 30px;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 6px 15px var(--shadow-base);
         }
-
-        .iframe-container.active {
+        
+        .category-section.active {
             display: block;
         }
 
-        .iframe-container.with-tabs {
-            height: calc(100vh - 71px - 51px);
+        .category-section h2 {
+            font-size: 28px;
+            color: var(--color-primary);
+            border-bottom: 3px solid var(--color-primary);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            display: inline-block;
         }
-
-        .iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* Popup blocker - allow only Mutipa */
-        .iframe-container:not(#mutipaContainer) iframe {
-            sandbox: allow-same-origin allow-scripts allow-forms;
-        }
-
-        #mutipaContainer iframe {
-            sandbox: allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Feature cards */
-        .features {
+        
+        .link-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-top: 60px;
-            animation: fadeIn 2.5s ease-in;
+            gap: 25px;
         }
 
-        .feature-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-
-        .feature-card h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
-            color: #667eea;
-        }
-
-        .feature-card p {
-            color: #b8b8d1;
-            line-height: 1.6;
-        }
-
-        .pin-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .link-card {
+            background-color: var(--bg-card-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--color-text);
             cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s ease;
+            /* ... other card styles */
         }
 
-        .pin-button:hover {
-            background: rgba(255, 215, 0, 0.4);
-            transform: scale(1.1);
+        .link-card:hover {
+            box-shadow: 0 8px 20px var(--shadow-hover);
+            transform: translateY(-5px);
+            background-color: var(--bg-card);
+            border-color: var(--color-primary);
         }
 
-        .pin-button.pinned {
-            background: rgba(255, 215, 0, 0.5);
-            border-color: rgba(255, 215, 0, 0.8);
+        .link-card h3 {
+            color: var(--color-card-text);
         }
 
-        .pinned-section {
-            margin-bottom: 40px;
+        .link-card .url {
+            color: var(--color-card-url);
+        }
+        
+        /* New Settings Styles */
+        .setting-group {
+             border-bottom: 1px solid var(--border-color);
+             /* ... other setting group styles */
         }
 
-        .pinned-section h2 {
-            color: #ffd700;
-            margin-bottom: 20px;
-            font-size: 32px;
+        /* Warning/Info Box - Darker for the space theme */
+        .warning {
+            color: #ffcc00; /* Yellow warning text */
+            background-color: #3b2c00; /* Darker background */
+            border: 1px solid #e0ac00;
+            /* ... other warning styles */
+        }
+        
+        .settings-info {
+            background-color: #1a1a38; /* Dark info box */
+            border-left: 5px solid var(--color-primary);
+            /* ... other info styles */
         }
 
-        /* Settings Panel */
-        .settings-panel {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: left;
-        }
 
-        .settings-panel h2 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 32px;
-        }
-
-        .settings-description {
-            color: #b8b8d1;
-            margin-bottom: 30px;
-        }
-
-        .cloak-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-
-        .cloak-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 20px;
-            background: rgba(102, 126, 234, 0.1);
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .cloak-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: rgba(102, 126, 234, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .cloak-btn img {
-            width: 24px;
-            height: 24px;
-        }
-
-        .custom-cloak {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 30px;
-        }
-
-        .custom-cloak h3 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .custom-input {
+        /*
+        ========================================
+        5. Star Particle Background
+        ========================================
+        */
+        .particle-background {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 12px 20px;
-            margin-bottom: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            height: 100%;
+            z-index: -1; 
+            pointer-events: none;
+            overflow: hidden;
         }
 
-        .custom-input:focus {
-            outline: none;
-            border-color: #667eea;
-            background: rgba(255, 255, 255, 0.08);
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1px; /* Smaller for star effect */
+            height: 1px;
+            background: transparent;
+            /* Star field via box-shadow (use smaller dots and more space) */
+            box-shadow: 
+                0vw 0vh 0 0 var(--particle-color), 90vw 50vh 0 0 var(--particle-color), 10vw 80vh 0 0 var(--particle-color),
+                40vw 30vh 0 0 var(--particle-color), 70vw 90vh 0 0 var(--particle-color), 25vw 10vh 0 0 var(--particle-color),
+                95vw 10vh 0 0 var(--particle-color), 5vw 45vh 0 0 var(--particle-color), 50vw 95vh 0 0 var(--particle-color),
+                80vw 20vh 0 0 var(--particle-color), 15vw 60vh 0 0 var(--particle-color), 65vw 5vh 0 0 var(--particle-color),
+                35vw 70vh 0 0 var(--particle-color), 55vw 25vh 0 0 var(--particle-color), 75vw 85vh 0 0 var(--particle-color),
+                /* Extra stars */
+                12vw 5vh 0 0 var(--particle-color), 88vw 33vh 0 0 var(--particle-color), 44vw 68vh 0 0 var(--particle-color),
+                60vw 15vh 0 0 var(--particle-color), 5vw 90vh 0 0 var(--particle-color), 90vw 5vh 0 0 var(--particle-color);
+            
+            animation: move-particles 100s linear infinite; /* Slower movement */
         }
 
-        .custom-input::placeholder {
-            color: #b8b8d1;
-        }
-
-        .panic-key-display {
-            display: inline-block;
-            padding: 10px 20px;
-            background: rgba(255, 107, 107, 0.2);
-            border: 2px solid rgba(255, 107, 107, 0.5);
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-
-        /* Mini Games */
-        #gameCanvas {
-            border: 2px solid rgba(102, 126, 234, 0.5);
-            border-radius: 10px;
-            display: block;
-            margin: 20px auto;
-        }
-
-        .game-controls {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .game-controls button {
-            margin: 0 10px;
-        }
-
-        .game-score {
-            text-align: center;
-            font-size: 24px;
-            color: #667eea;
-            margin: 20px 0;
+        @keyframes move-particles {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-20vw, 20vh); } /* Subtle drift */
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
 
-    <nav>
-        <div class="logo">COSMOS</div>
-        <ul class="nav-links">
-            <li><a href="#" onclick="showHome(); return false;">Home</a></li>
-            <li class="dropdown" id="sitesDropdown">
-                <a href="#" class="dropdown-toggle" id="dropdownToggle">
-                    Sites ▼
-                </a>
-                <div class="dropdown-menu">
-                    <a href="#" onclick="showPetezah(); closeDropdown(); return false;">🎮 Petezah</a>
-                    <a href="#" onclick="showShadow(); closeDropdown(); return false;">🌑 Shadow</a>
-                    <a href="#" onclick="showInterstellar(); closeDropdown(); return false;">🌌 Interstellar</a>
-                    <a href="#" onclick="showPizza(); closeDropdown(); return false;">🍕 Pizza</a>
-                    <a href="#" onclick="showMutipa(); closeDropdown(); return false;">🔬 Mutipa</a>
-                    <a href="#" onclick="showDoge(); closeDropdown(); return false;">🐕 Doge</a>
-                    <a href="#" onclick="showNight(); closeDropdown(); return false;">🌙 Night</a>
-                    <a href="#" onclick="showBolt(); closeDropdown(); return false;">⚡ Bolt</a>
-                </div>
-            </li>
-            <li class="dropdown" id="gamesDropdown">
-                <a href="#" class="dropdown-toggle" id="gamesToggle">
-                    Games ▼
-                </a>
-                <div class="dropdown-menu">
-                    <a href="#" onclick="showGame('snake'); closeGamesDropdown(); return false;">🐍 Snake</a>
-                    <a href="#" onclick="showGame('pong'); closeGamesDropdown(); return false;">🏓 Pong</a>
-                    <a href="#" onclick="showGame('flappy'); closeGamesDropdown(); return false;">🐦 Flappy Bird</a>
-                </div>
-            </li>
-            <li><a href="#" onclick="openAboutBlank(); return false;">🚀 Launch</a></li>
-            <li><a href="#" onclick="showSettings(); return false;" class="settings-icon">⚙️</a></li>
-        </ul>
-    </nav>
-
-    <div class="tab-groups" id="tabGroups"></div>
-
-    <div class="content" id="mainContent">
-        <h1>Welcome to the Cosmos</h1>
-        <p class="subtitle">Explore the infinite possibilities of space</p>
-        <button class="cta-button" onclick="showPetezah()">Launch Petezah</button>
-
-        <div id="pinnedSection"></div>
-
-        <div class="features" id="allSites">
-            <div class="feature-card" style="cursor: pointer;" data-site="petezah">
-                <div class="pin-button" onclick="togglePin('petezah', event)">📌</div>
-                <div onclick="showPetezah()">
-                    <h3>🎮 Petezah</h3>
-                    <p>Access your favorite gaming portal instantly</p>
-                </div>
-            </div>
-            <div class="feature-card" style="cursor: pointer;" data-site="shadow">
-                <div class="pin-button" onclick="togglePin('shadow', event)">📌</div>
-                <div onclick="showShadow()">
-                    <h3>🌑 Shadow</h3>
-                    <p>Explore the mysterious shadow dimension</p>
-                </div>
-            </div>
-            <div class="feature-card" style="cursor: pointer;" data-site="interstellar">
-                <div class="pin-button" onclick="togglePin('interstellar', event)">📌</div>
-                <div onclick="showInterstellar()">
-                    <h3>🌌 Interstellar</h3>
-                    <p>Journey beyond the stars to distant galaxies</p>
-                </div>
-            </div>
-            <div class="feature-card" style="cursor: pointer;" data-site="pizza">
-                <div class="pin-button" onclick="togglePin('pizza', event)">📌</div>
-                <div onclick="showPizza()">
-                    <h3>🍕 Pizza</h3>
-                    <p>Delicious math adventures await you</p>
-                </div>
-            </div>
-            <div class="feature-card" style="cursor: pointer;" data-site="mutipa">
-                <div class="pin-button" onclick="togglePin('mutipa', event)">📌</div>
-                <div onclick="showMutipa()">
-                    <h3>🔬 Mutipa</h3>
-                    <p>Discover experimental dimensions</p>
-                </div>
-            </div>
-            <div class="feature-card" style="cursor: pointer;" data-site="doge">
-                <div class="pin-button" onclick="togglePin('doge', event)">📌</div>
-                <div onclick="showDoge()">
-                    <h3>🐕 Doge</h3>
-                    <p>Much wow, such explore, very space</p>
-                </div>
-            </div>
-            <div class="feature-card" style="cursor: pointer;" data-site="night">
-                <div class="pin-button" onclick="togglePin('night', event)">📌</div>
-                <div onclick="showNight()">
-                    <h3>🌙 Night</h3>
-                    <p>Explore the darkness of the night sky</p>
-                </div>
-            </div>
-            <div class="feature-card" style="cursor: pointer;" data-site="bolt">
-                <div class="pin-button" onclick="togglePin('bolt', event)">📌</div>
-                <div onclick="showBolt()">
-                    <h3>⚡ Bolt</h3>
-                    <p>Lightning fast adventures at warp speed</p>
-                </div>
-            </div>
-        </div>
-
-        <button class="cta-button" onclick="openAboutBlank()" style="margin-top: 40px;">🚀 Open in New Window</button>
-    </div>
-
-    <div class="iframe-container" id="iframeContainer">
-        <iframe id="petezahFrame" allowfullscreen></iframe>
-    </div>
-
-    <div class="iframe-container" id="shadowContainer">
-        <iframe id="shadowFrame" allowfullscreen></iframe>
-    </div>
-
-    <div class="iframe-container" id="interstellarContainer">
-        <iframe id="interstellarFrame" allowfullscreen></iframe>
-    </div>
-
-    <div class="iframe-container" id="pizzaContainer">
-        <iframe id="pizzaFrame" allowfullscreen></iframe>
-    </div>
-
-    <div class="iframe-container" id="mutipaContainer">
-        <iframe id="mutipaFrame" allowfullscreen></iframe>
-    </div>
-
-    <div class="iframe-container" id="dogeContainer">
-        <iframe id="dogeFrame" allowfullscreen></iframe>
-    </div>
-
-    <div class="iframe-container" id="nightContainer">
-        <iframe id="nightFrame" allowfullscreen></iframe>
-    </div>
-
-    <div class="iframe-container" id="boltContainer">
-        <iframe id="boltFrame" allowfullscreen></iframe>
-    </div>
-
-    <div class="content" id="gamesContent" style="display: none;">
-        <h1 id="gameTitle">Mini Games</h1>
-        <p class="subtitle">Quick games to play right here!</p>
-        <div class="game-score" id="gameScore">Score: 0</div>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <div class="game-controls">
-            <button class="cta-button" onclick="startGame()">Start Game</button>
-            <button class="cta-button" onclick="showHome()">Back to Home</button>
-        </div>
-        <p class="subtitle" style="margin-top: 20px;" id="gameInstructions"></p>
-    </div>
-
-    <div class="content" id="settingsContent" style="display: none;">
-        <h1>⚙️ Settings</h1>
-        <p class="subtitle">Customize your experience</p>
-
-        <div class="settings-panel">
-            <h2>🚨 Panic Button</h2>
-            <p class="settings-description">Quickly switch to Google Classroom when you need to hide</p>
-            
-            <div class="panic-key-display">Current Panic Key: <span id="panicKeyDisplay">ESC</span></div>
-            
-            <p class="settings-description" style="margin-top: 15px;">
-                Press <strong>ESC</strong> anytime to instantly cloak as Google Classroom!<br>
-                Works on any page of the site.
-            </p>
-
-            <div style="margin-top: 20px;">
-                <label style="display: block; margin-bottom: 10px;">Change Panic Key:</label>
-                <select id="panicKeySelect" class="custom-input" onchange="setPanicKey()" style="width: auto; display: inline-block;">
-                    <option value="Escape">ESC</option>
-                    <option value="Backquote">`/~ Key</option>
-                    <option value="Backslash">\| Key</option>
-                    <option value="F1">F1</option>
-                    <option value="F2">F2</option>
-                </select>
-            </div>
-
-            <h2 style="margin-top: 40px;">🎭 Tab Cloaking</h2>
-            <p class="settings-description">Make this tab look like another website</p>
-            
-            <div class="cloak-options">
-                <button class="cloak-btn" onclick="cloakAs('Google Classroom', 'https://ssl.gstatic.com/classroom/ic_product_classroom_32.png')">
-                    <img src="https://ssl.gstatic.com/classroom/ic_product_classroom_32.png" alt="Classroom">
-                    Google Classroom
-                </button>
-                <button class="cloak-btn" onclick="cloakAs('Google Drive', 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png')">
-                    <img src="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png" alt="Drive">
-                    Google Drive
-                </button>
-                <button class="cloak-btn" onclick="cloakAs('Google Docs', 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico')">
-                    <img src="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico" alt="Docs">
-                    Google Docs
-                </button>
-                <button class="cloak-btn" onclick="cloakAs('Gmail', 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico')">
-                    <img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" alt="Gmail">
-                    Gmail
-                </button>
-                <button class="cloak-btn" onclick="cloakAs('Canvas', 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico')">
-                    <img src="https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" alt="Canvas">
-                    Canvas
-                </button>
-                <button class="cloak-btn" onclick="resetCloak()">
-                    ❌ Reset to Default
-                </button>
-            </div>
-
-            <div class="custom-cloak">
-                <h3>Custom Cloak</h3>
-                <input type="text" id="customTitle" placeholder="Tab Title" class="custom-input">
-                <input type="text" id="customIcon" placeholder="Favicon URL" class="custom-input">
-                <button class="cta-button" onclick="customCloak()" style="margin-top: 20px;">Apply Custom Cloak</button>
-            </div>
-
-            <div class="custom-cloak" style="margin-top: 40px;">
-                <h2>🎨 Themes</h2>
-                <p class="settings-description">Choose your visual theme</p>
-                <div class="cloak-options">
-                    <button class="cloak-btn" onclick="setTheme('default')">
-                        🌌 Space (Default)
-                    </button>
-                    <button class="cloak-btn" onclick="setTheme('ocean')">
-                        🌊 Ocean Depths
-                    </button>
-                    <button class="cloak-btn" onclick="setTheme('sunset')">
-                        🌅 Sunset Glow
-                    </button>
-                    <button class="cloak-btn" onclick="setTheme('forest')">
-                        🌲 Forest Night
-                    </button>
-                    <button class="cloak-btn" onclick="setTheme('neon')">
-                        💜 Neon Dreams
-                    </button>
-                    <button class="cloak-btn" onclick="setTheme('midnight')">
-                        🌑 Midnight Black
-                    </button>
-                </div>
-            </div>
-
-            <div class="custom-cloak" style="margin-top: 40px;">
-                <h2>⚡ Performance Mode</h2>
-                <p class="settings-description">Disable animations for better performance on slower devices</p>
-                <div class="cloak-options">
-                    <button class="cloak-btn" id="performanceBtn" onclick="togglePerformanceMode()">
-                        <span id="performanceStatus">❌ Performance Mode: OFF</span>
-                    </button>
-                </div>
-                <p class="settings-description" style="margin-top: 15px; font-size: 14px; opacity: 0.7;">
-                    • Disables star animations<br>
-                    • Removes transitions and hover effects<br>
-                    • Improves loading speed and responsiveness
-                </p>
-            </div>
-
-            <div class="custom-cloak" style="margin-top: 40px;">
-                <h2>➕ Add Custom Sites</h2>
-                <p class="settings-description">Add your own websites to the portal</p>
-                <input type="text" id="customSiteName" placeholder="Site Name (e.g., My Game)" class="custom-input">
-                <input type="text" id="customSiteUrl" placeholder="Website URL (e.g., https://example.com)" class="custom-input">
-                <input type="text" id="customSiteEmoji" placeholder="Emoji (e.g., 🎯)" class="custom-input" maxlength="2">
-                <button class="cta-button" onclick="addCustomSite()" style="margin-top: 20px;">Add Site</button>
-                
-                <div id="customSitesList" style="margin-top: 30px;"></div>
-            </div>
-
-            <div class="custom-cloak" style="margin-top: 40px;">
-                <h2>🖼️ Custom Background</h2>
-                <p class="settings-description">Upload your own background image or use a URL</p>
-                <input type="text" id="backgroundUrl" placeholder="Image URL" class="custom-input">
-                <button class="cta-button" onclick="setCustomBackground()" style="margin-top: 20px;">Apply Background</button>
-                <button class="cta-button" onclick="removeCustomBackground()" style="margin-top: 20px; margin-left: 10px; background: linear-gradient(45deg, #ff6b6b 0%, #c92a2a 100%);">Remove Background</button>
-            </div>
-
-            <div class="custom-cloak" style="margin-top: 40px;">
-                <h2>📝 Hidden Notes</h2>
-                <p class="settings-description">Private notes that extensions can't see</p>
-                <textarea id="hiddenNotes" class="custom-input" rows="8" placeholder="Write your private notes here..." style="resize: vertical; font-family: monospace;"></textarea>
-                <button class="cta-button" onclick="saveNotes()" style="margin-top: 20px;">Save Notes</button>
-                <p class="settings-description" style="margin-top: 15px; font-size: 12px; opacity: 0.6;">
-                    ✓ Stored locally and encrypted<br>
-                    ✓ Not accessible to browser extensions<br>
-                    ✓ Perfect for passwords, codes, or reminders
-                </p>
-            </div>
-
-            <div class="custom-cloak" style="margin-top: 40px;">
-                <h2>💾 Progress Saving</h2>
-                <p class="settings-description">Save and restore your session progress</p>
-                <button class="cta-button" onclick="exportProgress()">📥 Download Progress (XML)</button>
-                <button class="cta-button" onclick="document.getElementById('importFile').click()" style="margin-left: 10px;">📤 Import Progress</button>
-                <input type="file" id="importFile" accept=".xml" style="display: none;" onchange="importProgress(event)">
-                <p class="settings-description" style="margin-top: 15px; font-size: 14px; opacity: 0.7;">
-                    • Saves all your settings, pinned sites, custom sites, and notes<br>
-                    • Download as XML file to backup or transfer<br>
-                    • Import to restore your progress on any device
-                </p>
-            </div>
-        </div>
+    <div class="particle-background">
+        <div class="particles"></div>
     </div>
 
     <script>
-        // Generate random stars
-        const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 150; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 3 + 's';
-            starsContainer.appendChild(star);
-        }
-
-        // Pinned sites management
-        let pinnedSites = JSON.parse(localStorage.getItem('pinnedSites') || '[]');
-
-        function togglePin(siteName, event) {
-            event.stopPropagation();
-            const index = pinnedSites.indexOf(siteName);
-            if (index > -1) {
-                pinnedSites.splice(index, 1);
+        // Store the original openCloaked function
+        const originalOpenCloaked = (url) => {
+            var newWindow = window.open('about:blank', '_blank');
+            if (newWindow) {
+                setTimeout(function() {
+                    var iframeHTML = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Loading...</title>
+                            <style>
+                                body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #0b0f1a; }
+                                iframe { border: none; width: 100%; height: 100%; margin: 0; }
+                            </style>
+                        </head>
+                        <body>
+                            <iframe src="${url}"></iframe>
+                        </body>
+                        </html>
+                    `;
+                    newWindow.document.write(iframeHTML);
+                    newWindow.document.close();
+                }, 50);
             } else {
-                pinnedSites.push(siteName);
+                alert("Popup Blocker detected! Please allow popups for this site to use the cloaking feature.");
             }
-            localStorage.setItem('pinnedSites', JSON.stringify(pinnedSites));
-            updatePinnedDisplay();
-        }
+        };
 
-        function updatePinnedDisplay() {
-            const pinnedSection = document.getElementById('pinnedSection');
-            const allCards = document.querySelectorAll('.feature-card');
+        // Tab Switching Logic
+        function openTab(evt, tabName) {
+            document.querySelectorAll(".category-section").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".navbar button").forEach(el => el.classList.remove("active"));
             
-            // Update pin button states
-            allCards.forEach(card => {
-                const siteName = card.getAttribute('data-site');
-                const pinBtn = card.querySelector('.pin-button');
-                if (pinnedSites.includes(siteName)) {
-                    pinBtn.classList.add('pinned');
-                } else {
-                    pinBtn.classList.remove('pinned');
-                }
-            });
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Settings elements for new features
+        const body = document.body;
 
-            // Create pinned section
-            if (pinnedSites.length > 0) {
-                let html = '<div class="pinned-section"><h2>📌 Pinned Sites</h2><div class="features">';
-                allCards.forEach(card => {
-                    const siteName = card.getAttribute('data-site');
-                    if (pinnedSites.includes(siteName)) {
-                        html += card.outerHTML;
-                    }
-                });
-                html += '</div></div>';
-                pinnedSection.innerHTML = html;
-            } else {
-                pinnedSection.innerHTML = '';
+        /*
+        ========================================
+        Dark Mode Logic
+        ========================================
+        */
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
             }
         }
 
-        // Tab groups management
-        let openTabs = [];
-        let currentTab = null;
-
-        function addTab(name, id) {
-            if (!openTabs.find(tab => tab.id === id)) {
-                openTabs.push({ name, id });
-            }
-            currentTab = id;
-            updateTabGroups();
-        }
-
-        function removeTab(id, event) {
-            event.stopPropagation();
-            const index = openTabs.findIndex(tab => tab.id === id);
-            if (index > -1) {
-                openTabs.splice(index, 1);
-                if (currentTab === id) {
-                    if (openTabs.length > 0) {
-                        switchToTab(openTabs[0].id);
+        // Must attach event listener to the actual element after it's in the DOM
+        document.addEventListener('DOMContentLoaded', () => {
+             const toggle = document.getElementById('darkModeToggle');
+             
+             // Ensure the toggle state reflects the loaded theme
+             if (body.classList.contains('dark-mode')) {
+                 if (toggle) toggle.checked = true;
+             }
+             
+             if (toggle) {
+                toggle.addEventListener('change', () => {
+                    if (toggle.checked) {
+                        body.classList.add('dark-mode');
+                        localStorage.setItem('theme', 'dark');
                     } else {
-                        showHome();
+                        body.classList.remove('dark-mode');
+                        localStorage.setItem('theme', 'light');
                     }
-                }
-            }
-            updateTabGroups();
-        }
-
-        function switchToTab(id) {
-            currentTab = id;
-            const showFunctions = {
-                'petezah': showPetezah,
-                'shadow': showShadow,
-                'interstellar': showInterstellar,
-                'pizza': showPizza,
-                'mutipa': showMutipa,
-                'doge': showDoge,
-                'night': showNight,
-                'bolt': showBolt
-            };
-            if (showFunctions[id]) {
-                showFunctions[id](true);
-            }
-            updateTabGroups();
-        }
-
-        function updateTabGroups() {
-            const tabGroups = document.getElementById('tabGroups');
-            if (openTabs.length > 0) {
-                tabGroups.classList.add('active');
-                let html = '';
-                openTabs.forEach(tab => {
-                    const activeClass = tab.id === currentTab ? 'active-tab' : '';
-                    html += `<span class="tab-item ${activeClass}" onclick="switchToTab('${tab.id}')">
-                        ${tab.name} <span class="tab-close" onclick="removeTab('${tab.id}', event)">×</span>
-                    </span>`;
                 });
-                tabGroups.innerHTML = html;
-                
-                // Adjust iframe containers
-                document.querySelectorAll('.iframe-container').forEach(container => {
-                    container.classList.add('with-tabs');
-                });
+            }
+            // Manually set the initial active tab (Games) and link
+            document.getElementById('games').classList.add('active');
+            document.querySelector('.navbar button[onclick*="games"]').classList.add('active');
+        });
+
+
+        /*
+        ========================================
+        Custom Background Logic
+        ========================================
+        */
+        function setBackground(url) {
+            if (url) {
+                body.style.backgroundImage = `url('${url}')`;
+                body.style.backgroundSize = 'cover';
+                body.style.backgroundPosition = 'center';
+                body.style.backgroundAttachment = 'fixed';
             } else {
-                tabGroups.classList.remove('active');
-                document.querySelectorAll('.iframe-container').forEach(container => {
-                    container.classList.remove('with-tabs');
-                });
+                body.style.backgroundImage = 'none';
             }
         }
 
-        // Dropdown functionality
-        const dropdownToggle = document.getElementById('dropdownToggle');
-        const sitesDropdown = document.getElementById('sitesDropdown');
-        const gamesToggle = document.getElementById('gamesToggle');
-        const gamesDropdown = document.getElementById('gamesDropdown');
-
-        dropdownToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            sitesDropdown.classList.toggle('active');
-            gamesDropdown.classList.remove('active');
-        });
-
-        gamesToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            gamesDropdown.classList.toggle('active');
-            sitesDropdown.classList.remove('active');
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!sitesDropdown.contains(event.target)) {
-                sitesDropdown.classList.remove('active');
-            }
-            if (!gamesDropdown.contains(event.target)) {
-                gamesDropdown.classList.remove('active');
-            }
-        });
-
-        function closeDropdown() {
-            sitesDropdown.classList.remove('active');
+        function loadBackground() {
+            const savedBg = localStorage.getItem('customBackground');
+            setBackground(savedBg);
         }
 
-        function closeGamesDropdown() {
-            gamesDropdown.classList.remove('active');
-        }
-
-        // Lazy load iframes
-        function loadIframe(iframeId, url) {
-            const iframe = document.getElementById(iframeId);
-            if (!iframe.src) {
-                iframe.src = url;
-            }
-        }
-
-        function hideAllContainers() {
-            document.getElementById('mainContent').classList.add('hidden');
-            document.getElementById('settingsContent').style.display = 'none';
-            document.getElementById('gamesContent').style.display = 'none';
-            document.getElementById('iframeContainer').classList.remove('active');
-            document.getElementById('shadowContainer').classList.remove('active');
-            document.getElementById('interstellarContainer').classList.remove('active');
-            document.getElementById('pizzaContainer').classList.remove('active');
-            document.getElementById('mutipaContainer').classList.remove('active');
-            document.getElementById('dogeContainer').classList.remove('active');
-            document.getElementById('nightContainer').classList.remove('active');
-            document.getElementById('boltContainer').classList.remove('active');
-            
-            // Hide custom site containers
-            customSites.forEach(site => {
-                const container = document.getElementById(site.id + 'Container');
-                if (container) container.classList.remove('active');
-            });
-        }
-
-        function showPetezah(fromTab = false) {
-            loadIframe('petezahFrame', 'https://tooeasybuddy.viiic.net/');
-            hideAllContainers();
-            document.getElementById('iframeContainer').classList.add('active');
-            if (!fromTab) addTab('🎮 Petezah', 'petezah');
-        }
-
-        function showShadow(fromTab = false) {
-            loadIframe('shadowFrame', 'https://ShadowMathLEbron.erc.hr');
-            hideAllContainers();
-            document.getElementById('shadowContainer').classList.add('active');
-            if (!fromTab) addTab('🌑 Shadow', 'shadow');
-        }
-
-        function showInterstellar(fromTab = false) {
-            loadIframe('interstellarFrame', 'https://mathchefart.erc.hr/');
-            hideAllContainers();
-            document.getElementById('interstellarContainer').classList.add('active');
-            if (!fromTab) addTab('🌌 Interstellar', 'interstellar');
-        }
-
-        function showPizza(fromTab = false) {
-            loadIframe('pizzaFrame', 'https://coolmathstuff.erc.hr/');
-            hideAllContainers();
-            document.getElementById('pizzaContainer').classList.add('active');
-            if (!fromTab) addTab('🍕 Pizza', 'pizza');
-        }
-
-        function showMutipa(fromTab = false) {
-            loadIframe('mutipaFrame', 'https://level.lab.madhacker.biz/');
-            hideAllContainers();
-            document.getElementById('mutipaContainer').classList.add('active');
-            if (!fromTab) addTab('🔬 Mutipa', 'mutipa');
-        }
-
-        function showDoge(fromTab = false) {
-            loadIframe('dogeFrame', 'https://uknowimtuffboyyy.vercel.app/');
-            hideAllContainers();
-            document.getElementById('dogeContainer').classList.add('active');
-            if (!fromTab) addTab('🐕 Doge', 'doge');
-        }
-
-        function showNight(fromTab = false) {
-            loadIframe('nightFrame', 'https://tuffmean.vercel.app/apps');
-            hideAllContainers();
-            document.getElementById('nightContainer').classList.add('active');
-            if (!fromTab) addTab('🌙 Night', 'night');
-        }
-
-        function showBolt(fromTab = false) {
-            loadIframe('boltFrame', 'https://tuffboy56.vercel.app/');
-            hideAllContainers();
-            document.getElementById('boltContainer').classList.add('active');
-            if (!fromTab) addTab('⚡ Bolt', 'bolt');
-        }
-
-        function showHome() {
-            hideAllContainers();
-            document.getElementById('mainContent').classList.remove('hidden');
-            openTabs = [];
-            currentTab = null;
-            updateTabGroups();
-        }
-
-        function showSettings() {
-            hideAllContainers();
-            document.getElementById('settingsContent').style.display = 'block';
-        }
-
-        function openAboutBlank() {
-            const win = window.open();
-            win.document.body.style.margin = '0';
-            win.document.body.style.height = '100vh';
-            const iframe = win.document.createElement('iframe');
-            iframe.style.border = 'none';
-            iframe.style.width = '100%';
-            iframe.style.height = '100%';
-            iframe.style.margin = '0';
-            iframe.src = window.location.href;
-            win.document.body.appendChild(iframe);
-        }
-
-        // Panic button
-        let panicKey = localStorage.getItem('panicKey') || 'Escape';
-
-        function setPanicKey() {
-            panicKey = document.getElementById('panicKeySelect').value;
-            localStorage.setItem('panicKey', panicKey);
-            updatePanicKeyDisplay();
-        }
-
-        function updatePanicKeyDisplay() {
-            const keyNames = {
-                'Escape': 'ESC',
-                'Backquote': '`/~',
-                'Backslash': '\\|',
-                'F1': 'F1',
-                'F2': 'F2'
-            };
-            document.getElementById('panicKeyDisplay').textContent = keyNames[panicKey] || panicKey;
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.code === panicKey) {
-                e.preventDefault();
-                cloakAs('Home', 'https://ssl.gstatic.com/classroom/ic_product_classroom_32.png');
-                window.location.href = 'https://classroom.google.com';
-            }
-        });
-
-        // Cloaking functions
-        function cloakAs(title, iconUrl) {
-            document.title = title;
-            setFavicon(iconUrl);
-        }
-
-        function resetCloak() {
-            document.title = 'Space Portal';
-            setFavicon('');
-        }
-
-        function customCloak() {
-            const title = document.getElementById('customTitle').value;
-            const iconUrl = document.getElementById('customIcon').value;
-            
-            if (title) {
-                document.title = title;
-            }
-            if (iconUrl) {
-                setFavicon(iconUrl);
-            }
-        }
-
-        function setFavicon(url) {
-            let link = document.querySelector("link[rel*='icon']");
-            if (!link) {
-                link = document.createElement('link');
-                link.rel = 'icon';
-                document.head.appendChild(link);
-            }
-            link.href = url || 'data:,';
-        }
-
-        // Theme functions
-        function setTheme(theme) {
-            const body = document.body;
-            body.classList.remove('ocean-theme', 'sunset-theme', 'forest-theme', 'neon-theme', 'midnight-theme');
-            
-            if (theme !== 'default') {
-                body.classList.add(theme + '-theme');
-            }
-            
-            localStorage.setItem('selectedTheme', theme);
-        }
-
-        // Performance mode
-        function togglePerformanceMode() {
-            const body = document.body;
-            const isEnabled = body.classList.toggle('performance-mode');
-            localStorage.setItem('performanceMode', isEnabled);
-            updatePerformanceButton(isEnabled);
-        }
-
-        function updatePerformanceButton(isEnabled) {
-            const statusElement = document.getElementById('performanceStatus');
-            if (statusElement) {
-                if (isEnabled) {
-                    statusElement.textContent = '✅ Performance Mode: ON';
-                } else {
-                    statusElement.textContent = '❌ Performance Mode: OFF';
-                }
-            }
-        }
-
-        // Mini Games
-        let currentGame = null;
-        let gameScore = 0;
-        let gameLoop = null;
-
-        function showGame(gameName) {
-            hideAllContainers();
-            document.getElementById('gamesContent').style.display = 'block';
-            currentGame = gameName;
-            gameScore = 0;
-            
-            const titles = {
-                'snake': '🐍 Snake Game',
-                'pong': '🏓 Pong Game',
-                'flappy': '🐦 Flappy Bird'
-            };
-            
-            const instructions = {
-                'snake': 'Use Arrow Keys to move. Don\'t hit the walls or yourself!',
-                'pong': 'Use Arrow Up/Down to move paddle. Don\'t let the ball pass!',
-                'flappy': 'Press SPACE to flap. Avoid the obstacles!'
-            };
-            
-            document.getElementById('gameTitle').textContent = titles[gameName];
-            document.getElementById('gameInstructions').textContent = instructions[gameName];
-            document.getElementById('gameScore').textContent = 'Score: 0';
-        }
-
-        function startGame() {
-            if (gameLoop) clearInterval(gameLoop);
-            gameScore = 0;
-            
-            if (currentGame === 'snake') startSnake();
-            else if (currentGame === 'pong') startPong();
-            else if (currentGame === 'flappy') startFlappy();
-        }
-
-        // Snake Game
-        let snake, food, dx, dy, changingDirection;
-        
-        function startSnake() {
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            const gridSize = 20;
-            snake = [{x: 200, y: 200}];
-            food = {x: 100, y: 100};
-            dx = gridSize;
-            dy = 0;
-            changingDirection = false;
-            
-            document.addEventListener('keydown', changeSnakeDirection);
-            
-            gameLoop = setInterval(() => {
-                moveSnake();
-                if (checkSnakeCollision()) {
-                    clearInterval(gameLoop);
-                    alert('Game Over! Score: ' + gameScore);
-                    return;
-                }
-                drawSnake(ctx, canvas, gridSize);
-            }, 100);
-        }
-
-        function changeSnakeDirection(e) {
-            const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40;
-            if (changingDirection) return;
-            changingDirection = true;
-            
-            if (e.keyCode === LEFT && dx === 0) { dx = -20; dy = 0; }
-            else if (e.keyCode === UP && dy === 0) { dx = 0; dy = -20; }
-            else if (e.keyCode === RIGHT && dx === 0) { dx = 20; dy = 0; }
-            else if (e.keyCode === DOWN && dy === 0) { dx = 0; dy = 20; }
-        }
-
-        function moveSnake() {
-            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
-            snake.unshift(head);
-            
-            if (head.x === food.x && head.y === food.y) {
-                gameScore += 10;
-                document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
-                food = {
-                    x: Math.floor(Math.random() * 20) * 20,
-                    y: Math.floor(Math.random() * 20) * 20
-                };
-            } else {
-                snake.pop();
-            }
-            changingDirection = false;
-        }
-
-        function checkSnakeCollision() {
-            const head = snake[0];
-            if (head.x < 0 || head.x >= 400 || head.y < 0 || head.y >= 400) return true;
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) return true;
-            }
-            return false;
-        }
-
-        function drawSnake(ctx, canvas, gridSize) {
-            ctx.fillStyle = '#0a0e27';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#667eea';
-            snake.forEach(segment => {
-                ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
-            });
-            
-            ctx.fillStyle = '#ff6b6b';
-            ctx.fillRect(food.x, food.y, gridSize, gridSize);
-        }
-
-        // Pong Game
-        let paddle, ball, ballDx, ballDy;
-        
-        function startPong() {
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            paddle = {x: 10, y: 150, width: 10, height: 80};
-            ball = {x: 200, y: 200, radius: 8};
-            ballDx = 3;
-            ballDy = 3;
-            
-            document.addEventListener('keydown', movePaddle);
-            
-            gameLoop = setInterval(() => {
-                moveBall(canvas);
-                drawPong(ctx, canvas);
-            }, 1000/60);
-        }
-
-        function movePaddle(e) {
-            const UP = 38, DOWN = 40;
-            if (e.keyCode === UP && paddle.y > 0) paddle.y -= 20;
-            if (e.keyCode === DOWN && paddle.y < 320) paddle.y += 20;
-        }
-
-        function moveBall(canvas) {
-            ball.x += ballDx;
-            ball.y += ballDy;
-            
-            if (ball.y <= 0 || ball.y >= canvas.height) ballDy = -ballDy;
-            
-            if (ball.x <= paddle.x + paddle.width && 
-                ball.y >= paddle.y && 
-                ball.y <= paddle.y + paddle.height) {
-                ballDx = -ballDx;
-                gameScore += 10;
-                document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
-            }
-            
-            if (ball.x <= 0) {
-                clearInterval(gameLoop);
-                alert('Game Over! Score: ' + gameScore);
-            }
-            
-            if (ball.x >= canvas.width) ballDx = -ballDx;
-        }
-
-        function drawPong(ctx, canvas) {
-            ctx.fillStyle = '#0a0e27';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#667eea';
-            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-            
-            ctx.fillStyle = '#ff6b6b';
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Flappy Bird
-        let bird, pipes, gravity, jump, pipeGap;
-        
-        function startFlappy() {
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            bird = {x: 50, y: 200, radius: 15, velocity: 0};
-            pipes = [];
-            gravity = 0.5;
-            jump = -8;
-            pipeGap = 150;
-            
-            document.addEventListener('keydown', flapBird);
-            
-            let frameCount = 0;
-            gameLoop = setInterval(() => {
-                frameCount++;
-                if (frameCount % 90 === 0) {
-                    const pipeY = Math.random() * (canvas.height - pipeGap - 100) + 50;
-                    pipes.push({x: canvas.width, y: pipeY});
-                }
-                
-                bird.velocity += gravity;
-                bird.y += bird.velocity;
-                
-                pipes.forEach(pipe => {
-                    pipe.x -= 2;
-                    if (pipe.x + 50 === bird.x) {
-                        gameScore += 10;
-                        document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
-                    }
-                });
-                
-                pipes = pipes.filter(pipe => pipe.x > -50);
-                
-                if (checkFlappyCollision(canvas)) {
-                    clearInterval(gameLoop);
-                    alert('Game Over! Score: ' + gameScore);
-                    return;
-                }
-                
-                drawFlappy(ctx, canvas);
-            }, 1000/60);
-        }
-
-        function flapBird(e) {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                bird.velocity = jump;
-            }
-        }
-
-        function checkFlappyCollision(canvas) {
-            if (bird.y <= 0 || bird.y >= canvas.height) return true;
-            
-            for (let pipe of pipes) {
-                if (bird.x + bird.radius > pipe.x && bird.x - bird.radius < pipe.x + 50) {
-                    if (bird.y - bird.radius < pipe.y || bird.y + bird.radius > pipe.y + pipeGap) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        function drawFlappy(ctx, canvas) {
-            ctx.fillStyle = '#0a0e27';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#667eea';
-            ctx.beginPath();
-            ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.fillStyle = '#4CAF50';
-            pipes.forEach(pipe => {
-                ctx.fillRect(pipe.x, 0, 50, pipe.y);
-                ctx.fillRect(pipe.x, pipe.y + pipeGap, 50, canvas.height);
-            });
-        }
-
-        // Load saved settings
-        window.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = localStorage.getItem('selectedTheme');
-            if (savedTheme && savedTheme !== 'default') {
-                document.body.classList.add(savedTheme + '-theme');
-            }
-            
-            const performanceMode = localStorage.getItem('performanceMode');
-            if (performanceMode === 'true') {
-                document.body.classList.add('performance-mode');
-                updatePerformanceButton(true);
-            }
-            
-            const savedPanicKey = localStorage.getItem('panicKey');
-            if (savedPanicKey) {
-                panicKey = savedPanicKey;
-                document.getElementById('panicKeySelect').value = savedPanicKey;
-                updatePanicKeyDisplay();
-            }
-            
-            updatePinnedDisplay();
-            loadCustomSites();
-            loadNotes();
-            loadCustomBackground();
-        });
-
-        // Custom sites management
-        let customSites = JSON.parse(localStorage.getItem('customSites') || '[]');
-
-        function addCustomSite() {
-            const name = document.getElementById('customSiteName').value.trim();
-            const url = document.getElementById('customSiteUrl').value.trim();
-            const emoji = document.getElementById('customSiteEmoji').value.trim() || '🌐';
-            
-            if (!name || !url) {
-                alert('Please enter both name and URL!');
-                return;
-            }
-            
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                alert('URL must start with http:// or https://');
-                return;
-            }
-            
-            const id = 'custom_' + Date.now();
-            customSites.push({ id, name, url, emoji });
-            localStorage.setItem('customSites', JSON.stringify(customSites));
-            
-            document.getElementById('customSiteName').value = '';
-            document.getElementById('customSiteUrl').value = '';
-            document.getElementById('customSiteEmoji').value = '';
-            
-            loadCustomSites();
-            addCustomSiteToHome(id, name, url, emoji);
-        }
-
-        function removeCustomSite(id) {
-            customSites = customSites.filter(site => site.id !== id);
-            localStorage.setItem('customSites', JSON.stringify(customSites));
-            loadCustomSites();
-            
-            // Remove from home page
-            const card = document.querySelector(`[data-site="${id}"]`);
-            if (card) card.remove();
-            
-            // Remove iframe container if exists
-            const container = document.getElementById(id + 'Container');
-            if (container) container.remove();
-        }
-
-        function loadCustomSites() {
-            const listDiv = document.getElementById('customSitesList');
-            if (customSites.length === 0) {
-                listDiv.innerHTML = '<p class="settings-description">No custom sites added yet.</p>';
-                return;
-            }
-            
-            let html = '<h3 style="color: #667eea; margin-bottom: 15px;">Your Custom Sites:</h3>';
-            customSites.forEach(site => {
-                html += `
-                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                        <span>${site.emoji} ${site.name}</span>
-                        <button class="cloak-btn" onclick="removeCustomSite('${site.id}')" style="background: rgba(255, 107, 107, 0.2); border-color: rgba(255, 107, 107, 0.5);">
-                            Remove
-                        </button>
-                    </div>
-                `;
-            });
-            listDiv.innerHTML = html;
-            
-            // Add custom sites to home page if not already there
-            customSites.forEach(site => {
-                if (!document.querySelector(`[data-site="${site.id}"]`)) {
-                    addCustomSiteToHome(site.id, site.name, site.url, site.emoji);
-                }
-            });
-        }
-
-        function addCustomSiteToHome(id, name, url, emoji) {
-            const allSites = document.getElementById('allSites');
-            const card = document.createElement('div');
-            card.className = 'feature-card';
-            card.style.cursor = 'pointer';
-            card.setAttribute('data-site', id);
-            card.innerHTML = `
-                <div class="pin-button" onclick="togglePin('${id}', event)">📌</div>
-                <div onclick="showCustomSite('${id}', '${url}', '${emoji} ${name}')">
-                    <h3>${emoji} ${name}</h3>
-                    <p>Custom added site</p>
-                </div>
-            `;
-            allSites.appendChild(card);
-            
-            // Create iframe container
-            const container = document.createElement('div');
-            container.className = 'iframe-container';
-            container.id = id + 'Container';
-            container.innerHTML = `<iframe id="${id}Frame" allowfullscreen></iframe>`;
-            document.body.appendChild(container);
-        }
-
-        function showCustomSite(id, url, name) {
-            loadIframe(id + 'Frame', url);
-            hideAllContainers();
-            document.getElementById(id + 'Container').classList.add('active');
-            addTab(name, id);
-        }
-
-        // Hidden notes with basic encryption
-        function saveNotes() {
-            const notes = document.getElementById('hiddenNotes').value;
-            const encoded = btoa(unescape(encodeURIComponent(notes))); // Basic encoding
-            localStorage.setItem('hiddenNotes', encoded);
-            alert('Notes saved securely! ✓');
-        }
-
-        function loadNotes() {
-            const encoded = localStorage.getItem('hiddenNotes');
-            if (encoded) {
-                try {
-                    const decoded = decodeURIComponent(escape(atob(encoded)));
-                    document.getElementById('hiddenNotes').value = decoded;
-                } catch (e) {
-                    console.log('Could not load notes');
-                }
-            }
-        }
-
-        // Custom background
-        function setCustomBackground() {
-            const url = document.getElementById('backgroundUrl').value.trim();
-            if (!url) {
-                alert('Please enter an image URL!');
-                return;
-            }
-            
-            document.body.style.backgroundImage = `url('${url}')`;
-            document.body.classList.add('custom-bg');
-            localStorage.setItem('customBackground', url);
-            alert('Background applied! ✓');
-        }
-
-        function removeCustomBackground() {
-            document.body.style.backgroundImage = '';
-            document.body.classList.remove('custom-bg');
+        function clearCustomBackground() {
+            setBackground(null);
             localStorage.removeItem('customBackground');
-            document.getElementById('backgroundUrl').value = '';
-            alert('Background removed! ✓');
+            const input = document.getElementById('bgImageInput');
+            if (input) input.value = '';
+            alert("Custom background cleared!");
         }
 
-        function loadCustomBackground() {
-            const bg = localStorage.getItem('customBackground');
-            if (bg) {
-                document.body.style.backgroundImage = `url('${bg}')`;
-                document.body.classList.add('custom-bg');
-                document.getElementById('backgroundUrl').value = bg;
-            }
-        }
-
-        // Export/Import Progress as XML
-        function exportProgress() {
-            const data = {
-                version: '1.0',
-                timestamp: new Date().toISOString(),
-                settings: {
-                    theme: localStorage.getItem('selectedTheme') || 'default',
-                    performanceMode: localStorage.getItem('performanceMode') || 'false',
-                    panicKey: localStorage.getItem('panicKey') || 'Escape',
-                    customBackground: localStorage.getItem('customBackground') || ''
-                },
-                pinnedSites: JSON.parse(localStorage.getItem('pinnedSites') || '[]'),
-                customSites: JSON.parse(localStorage.getItem('customSites') || '[]'),
-                hiddenNotes: localStorage.getItem('hiddenNotes') || ''
-            };
-            
-            const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<SpacePortalProgress>
-    <Version>${data.version}</Version>
-    <Timestamp>${data.timestamp}</Timestamp>
-    <Settings>
-        <Theme>${data.settings.theme}</Theme>
-        <PerformanceMode>${data.settings.performanceMode}</PerformanceMode>
-        <PanicKey>${data.settings.panicKey}</PanicKey>
-        <CustomBackground><![CDATA[${data.settings.customBackground}]]></CustomBackground>
-    </Settings>
-    <PinnedSites>
-        ${data.pinnedSites.map(site => `<Site>${site}</Site>`).join('\n        ')}
-    </PinnedSites>
-    <CustomSites>
-        ${data.customSites.map(site => `
-        <CustomSite>
-            <ID>${site.id}</ID>
-            <Name><![CDATA[${site.name}]]></Name>
-            <URL><![CDATA[${site.url}]]></URL>
-            <Emoji>${site.emoji}</Emoji>
-        </CustomSite>`).join('')}
-    </CustomSites>
-    <HiddenNotes><![CDATA[${data.hiddenNotes}]]></HiddenNotes>
-</SpacePortalProgress>`;
-            
-            const blob = new Blob([xml], { type: 'application/xml' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `space-portal-progress-${Date.now()}.xml`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            alert('Progress exported successfully! ✓');
-        }
-
-        function importProgress(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const xmlText = e.target.result;
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-                    
-                    // Parse and restore settings
-                    const theme = xmlDoc.querySelector('Theme')?.textContent || 'default';
-                    const perfMode = xmlDoc.querySelector('PerformanceMode')?.textContent || 'false';
-                    const panicKeyVal = xmlDoc.querySelector('PanicKey')?.textContent || 'Escape';
-                    const customBg = xmlDoc.querySelector('CustomBackground')?.textContent || '';
-                    
-                    localStorage.setItem('selectedTheme', theme);
-                    localStorage.setItem('performanceMode', perfMode);
-                    localStorage.setItem('panicKey', panicKeyVal);
-                    if (customBg) localStorage.setItem('customBackground', customBg);
-                    
-                    // Parse pinned sites
-                    const pinnedNodes = xmlDoc.querySelectorAll('PinnedSites > Site');
-                    const pinned = Array.from(pinnedNodes).map(node => node.textContent);
-                    localStorage.setItem('pinnedSites', JSON.stringify(pinned));
-                    
-                    // Parse custom sites
-                    const customSiteNodes = xmlDoc.querySelectorAll('CustomSite');
-                    const customs = Array.from(customSiteNodes).map(node => ({
-                        id: node.querySelector('ID').textContent,
-                        name: node.querySelector('Name').textContent,
-                        url: node.querySelector('URL').textContent,
-                        emoji: node.querySelector('Emoji').textContent
-                    }));
-                    localStorage.setItem('customSites', JSON.stringify(customs));
-                    customSites = customs;
-                    
-                    // Parse hidden notes
-                    const notes = xmlDoc.querySelector('HiddenNotes')?.textContent || '';
-                    if (notes) localStorage.setItem('hiddenNotes', notes);
-                    
-                    alert('Progress imported successfully! Reloading page...');
-                    location.reload();
-                } catch (error) {
-                    alert('Error importing progress. Please make sure the file is valid.');
-                    console.error(error);
+        // File input listener converts the local file to a Data URL string
+        document.addEventListener('change', (event) => {
+            if (event.target.id === 'bgImageInput') {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const dataUrl = e.target.result;
+                        setBackground(dataUrl);
+                        localStorage.setItem('customBackground', dataUrl); 
+                        alert("Custom background set and saved! (Large images may slow down load time)");
+                    }
+                    reader.readAsDataURL(file); 
                 }
-            };
-            reader.readAsText(file);
-        }
+            }
+        });
+        
+        // Initial setup calls
+        loadTheme();
+        loadBackground();
     </script>
+
+    <div class="navbar">
+        <button class="tab-link" onclick="openTab(event, 'games')">🎮 Star Games</button>
+        <button class="tab-link" onclick="openTab(event, 'proxies')">🪐 Proxy Wormholes</button>
+        <button class="tab-link" onclick="openTab(event, 'settings')">⚙️ Control Panel</button>
+    </div>
+
+    <div class="content">
+
+        <div class="warning">
+            ⚠️ **Cosmic Alert!** The Hub has been upgraded with a **Space Theme**, **Dark Mode**, and **Custom Backgrounds**! Set your controls in the **Control Panel** tab.
+        </div>
+
+        <div id="games" class="category-section active">
+            <h2>🚀 Launch Bay - Games Hub</h2>
+            <div class="link-grid">
+                <a href="https://www.coolmathgames.com/" target="_blank" class="link-card">
+                    <div>
+                        <h3><span class="icon">🧠</span> Coolmath Games Station</h3>
+                        <p>Often unblocked due to its 'educational' label. Great for puzzle games.</p>
+                    </div>
+                    <span class="url">www.coolmathgames.com</span>
+                </a>
+
+                <a href="https://www.hoodamath.com/" target="_blank" class="link-card">
+                    <div>
+                        <h3><span class="icon">➕</span> Hooda Math Galaxy</h3>
+                        <p>A safe bet for math-themed games that filters often ignore.</p>
+                    </div>
+                    <span class="url">www.hoodamath.com</span>
+                </a>
+
+                <a href="https://scratch.mit.edu/" target="_blank" class="link-card">
+                    <div>
+                        <h3><span class="icon">👨‍💻</span> Scratch Development Lab</h3>
+                        <p>User-created games and coding projects. A massive, creative library.</p>
+                    </div>
+                    <span class="url">scratch.mit.edu</span>
+                </a>
+            </div>
+        </div>
+
+        <div id="proxies" class="category-section">
+            <h2>🔗 Navigating the Void - Unblockers</h2>
+            <div class="link-grid">
+                
+                <div onclick="originalOpenCloaked('https://spiderexcavations.emploi.cl/')" class="link-card">
+                    <h3><span class="icon">🚀</span> Interstellar Wormhole</h3>
+                    <p>A popular, cutting-edge web proxy often used to access blocked content.</p>
+                    <span class="url">spiderexcavations.emploi.cl (Cloaked)</span>
+                </div>
+
+                <div onclick="originalOpenCloaked('https://readingsubject.emploi.cl/')" class="link-card">
+                    <h3><span class="icon">📚</span> Petezah Nebula</h3>
+                    <p>Another unblocked link, potentially masquerading as a school resource.</p>
+                    <span class="url">readingsubject.emploi.cl (Cloaked)</span>
+                </div>
+
+                <div onclick="originalOpenCloaked('https://mathlookscool.emploi.cl/')" class="link-card">
+                    <h3><span class="icon">🕶️</span> Shadow Comet (Math)</h3>
+                    <p>A fresh link designed to slip past Securly and other content filters.</p>
+                    <span class="url">mathlookscool.emploi.cl (Cloaked)</span>
+                </div>
+
+                <div onclick="originalOpenCloaked('https://www.croxyproxy.com/')" class="link-card">
+                    <h3><span class="icon">🛡️</span> CroxyProxy Shield</h3>
+                    <p>A well-known, free web proxy that encrypts your connection.</p>
+                    <span class="url">www.croxyproxy.com (Cloaked)</span>
+                </div>
+
+                <div onclick="originalOpenCloaked('https://translate.google.com/')" class="link-card">
+                    <h3><span class="icon">🌐</span> Google Translator Warp</h3>
+                    <p>Paste a blocked site's URL into the translator and click the link to bypass simple blocks.</p>
+                    <span class="url">translate.google.com (Cloaked)</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="settings" class="category-section">
+            <h2>⚙️ Control Panel - Customization</h2>
+            
+            <div class="setting-group">
+                <h3>Astro-Theme Toggle (Dark Mode)</h3>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-group" style="flex-direction: column; align-items: flex-start;">
+                <h3>Set Custom Star Field Image</h3>
+                <p style="margin-top: 10px; font-weight: 400; font-size: 14px;">Upload a custom image from your PC. It will be saved until you clear it!</p>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <input type="file" id="bgImageInput" accept="image/*" style="flex-grow: 1; padding: 10px; border: 1px solid var(--border-color); background-color: var(--bg-card-secondary);">
+                    <button onclick="clearCustomBackground()" style="padding: 10px 15px; background-color: #5c72ff; color: white; border: none; border-radius: 5px; cursor: pointer;">Clear Image</button>
+                </div>
+            </div>
+
+            <div class="settings-info">
+                <p><strong>Mission Status:</strong> School filters like Securly constantly update their block lists. If a proxy link stops working, it means the administrators have found it and blocked the wormhole.</p>
+                <p><strong>Warp Drive Cloaking Explained:</strong></p>
+                <p>The **Proxy Wormholes** use a JavaScript trick to open a **blank new window** first. Then, it projects the proxy site inside that window using an **iframe**. Because the original window opened as `about:blank`, that is what the address bar shows, helping to hide your current destination.</p>
+                <p><strong>Emergency Procedures (If a link is blocked):</strong></p>
+                <ul>
+                    <li>Try a different **Proxy Wormhole** from the list.</li>
+                    <li>For games, try the **Google Translator Warp** with the game site's URL.</li>
+                    <li>Clear your browser's **cookies and cache** (eject old data) before trying a new proxy.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
 </body>
 </html>
