@@ -3,45 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 Stellar Hub 🪐</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=400;600;700&display=swap" rel="stylesheet">
+    <title>⚡ Unblocked Hub ⚡</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         /*
         ========================================
-        1. SPACE THEME CSS Variables
+        1. CSS Variables for Dark Mode (Original Aesthetic)
         ========================================
         */
         :root {
-            /* Light Mode (Still Space-Themed) */
-            --bg-page: #151a30; /* Deep Space Blue */
-            --bg-card: #222b45; /* Dark Card Base */
-            --bg-card-secondary: #2c3558; /* Slightly Lighter Hover */
-            --bg-navbar: #0f1626; /* Deepest Navy for Navbar */
-            --color-text: #e4e6f8; /* Pale text */
-            --color-primary: #5c72ff; /* Primary Neon Blue/Purple */
-            --color-link-hover: #4e63f5;
-            --color-card-text: #8dc6ff; /* Star Highlight */
-            --color-card-url: #a0a0c0;
-            --border-color: #3b476e;
-            --shadow-base: rgba(0, 0, 0, 0.4);
-            --shadow-hover: rgba(92, 114, 255, 0.3);
-            --settings-info-bg: #4a4000;
-            --settings-info-border: #e0ac00;
-            --particle-color: rgba(255, 255, 255, 0.8); /* Bright stars */
+            /* Light Mode Defaults */
+            --bg-page: #e9eff5; /* Very light, fresh background */
+            --bg-card: #ffffff;
+            --bg-card-secondary: #f8f8f8;
+            --bg-navbar: #3e7cb1; /* Primary fresh color (Original) */
+            --color-text: #333;
+            --color-primary: #3e7cb1;
+            --color-link-hover: #5d98c5;
+            --color-card-text: #2a6896;
+            --color-card-url: #777;
+            --border-color: #ddd;
+            --shadow-base: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(62, 124, 177, 0.2);
+            --settings-info-bg: #fffacd;
+            --settings-info-border: #ffcc00;
+            --particle-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
         }
 
         body.dark-mode {
-            /* Dark Mode (Minimal Change, just deeper/more contrast) */
-            --bg-page: #0b0f1a;
-            --bg-card: #1c2235;
-            --bg-card-secondary: #252b45;
-            --bg-navbar: #070a13;
-            --color-text: #ffffff;
-            --color-primary: #7d90ff;
-            --color-link-hover: #5c72ff;
-            --color-card-text: #b3d9ff;
-            --border-color: #303a5c;
-            --particle-color: rgba(255, 255, 255, 0.5); /* Dimmer stars for background */
+            /* Dark Mode Overrides */
+            --bg-page: #1a1a1a;
+            --bg-card: #2c2c2c;
+            --bg-card-secondary: #353535;
+            --bg-navbar: #005691;
+            --color-text: #f0f0f0;
+            --color-primary: #5d98c5;
+            --color-link-hover: #007bff;
+            --color-card-text: #8dc6ff;
+            --color-card-url: #aaaaaa;
+            --border-color: #555;
+            --shadow-base: rgba(0, 0, 0, 0.3);
+            --shadow-hover: rgba(93, 152, 197, 0.5);
+            --settings-info-bg: #4a4000;
+            --settings-info-border: #e0ac00;
+            --particle-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
         }
 
         /*
@@ -60,7 +65,7 @@
             position: relative;
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* Ensures particles/image stays put */
+            background-attachment: fixed;
         }
 
         .content {
@@ -85,18 +90,21 @@
             box-shadow: 0 4px 12px var(--shadow-base);
             z-index: 1000;
             display: flex;
+            justify-content: center;
             padding: 0;
         }
         
         .navbar button {
             background-color: transparent;
-            color: var(--color-text);
+            color: white;
             border: none;
             padding: 15px 30px;
+            text-decoration: none;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
+            margin: 0 10px;
         }
 
         .navbar button:hover:not(.active) {
@@ -104,8 +112,8 @@
         }
         
         .navbar button.active {
-            background-color: var(--bg-card-secondary); /* Active tab color */
-            border-bottom: 4px solid var(--color-primary); /* Neon highlight */
+            background-color: var(--color-link-hover);
+            border-bottom: 4px solid white;
             padding-bottom: 11px;
         }
 
@@ -147,48 +155,120 @@
             border: 1px solid var(--border-color);
             color: var(--color-text);
             cursor: pointer;
-            /* ... other card styles */
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .link-card:hover {
             box-shadow: 0 8px 20px var(--shadow-hover);
             transform: translateY(-5px);
             background-color: var(--bg-card);
-            border-color: var(--color-primary);
         }
 
         .link-card h3 {
             color: var(--color-card-text);
+            margin-top: 0;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .icon {
+            margin-right: 10px;
+            font-size: 24px;
         }
 
         .link-card .url {
             color: var(--color-card-url);
-        }
-        
-        /* New Settings Styles */
-        .setting-group {
-             border-bottom: 1px solid var(--border-color);
-             /* ... other setting group styles */
+            font-size: 14px;
+            word-break: break-all;
         }
 
-        /* Warning/Info Box - Darker for the space theme */
-        .warning {
-            color: #ffcc00; /* Yellow warning text */
-            background-color: #3b2c00; /* Darker background */
-            border: 1px solid #e0ac00;
-            /* ... other warning styles */
-        }
-        
+        /* Settings Styles */
         .settings-info {
-            background-color: #1a1a38; /* Dark info box */
-            border-left: 5px solid var(--color-primary);
-            /* ... other info styles */
+            line-height: 1.8;
+            background-color: var(--settings-info-bg);
+            padding: 20px;
+            border-left: 5px solid var(--settings-info-border);
+            border-radius: 8px;
+        }
+        
+        .warning {
+            color: #a33;
+            font-weight: 600;
+            background-color: #fcebeb;
+            border: 1px solid #ecc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .setting-group {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .setting-group:last-of-type {
+            border-bottom: none;
+        }
+        
+        /* Custom Switch CSS */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
         }
 
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
 
         /*
         ========================================
-        5. Star Particle Background
+        5. Particle Background
         ========================================
         */
         .particle-background {
@@ -206,26 +286,23 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 1px; /* Smaller for star effect */
-            height: 1px;
+            width: 2px;
+            height: 2px;
             background: transparent;
-            /* Star field via box-shadow (use smaller dots and more space) */
+            /* Dot field via box-shadow */
             box-shadow: 
                 0vw 0vh 0 0 var(--particle-color), 90vw 50vh 0 0 var(--particle-color), 10vw 80vh 0 0 var(--particle-color),
                 40vw 30vh 0 0 var(--particle-color), 70vw 90vh 0 0 var(--particle-color), 25vw 10vh 0 0 var(--particle-color),
                 95vw 10vh 0 0 var(--particle-color), 5vw 45vh 0 0 var(--particle-color), 50vw 95vh 0 0 var(--particle-color),
                 80vw 20vh 0 0 var(--particle-color), 15vw 60vh 0 0 var(--particle-color), 65vw 5vh 0 0 var(--particle-color),
-                35vw 70vh 0 0 var(--particle-color), 55vw 25vh 0 0 var(--particle-color), 75vw 85vh 0 0 var(--particle-color),
-                /* Extra stars */
-                12vw 5vh 0 0 var(--particle-color), 88vw 33vh 0 0 var(--particle-color), 44vw 68vh 0 0 var(--particle-color),
-                60vw 15vh 0 0 var(--particle-color), 5vw 90vh 0 0 var(--particle-color), 90vw 5vh 0 0 var(--particle-color);
+                35vw 70vh 0 0 var(--particle-color), 55vw 25vh 0 0 var(--particle-color), 75vw 85vh 0 0 var(--particle-color);
             
-            animation: move-particles 100s linear infinite; /* Slower movement */
+            animation: move-particles 60s linear infinite;
         }
 
         @keyframes move-particles {
             0% { transform: translate(0, 0); }
-            100% { transform: translate(-20vw, 20vh); } /* Subtle drift */
+            100% { transform: translate(100vw, 100vh); } 
         }
     </style>
 </head>
@@ -247,7 +324,7 @@
                         <head>
                             <title>Loading...</title>
                             <style>
-                                body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #0b0f1a; }
+                                body { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
                                 iframe { border: none; width: 100%; height: 100%; margin: 0; }
                             </style>
                         </head>
@@ -366,23 +443,23 @@
     </script>
 
     <div class="navbar">
-        <button class="tab-link" onclick="openTab(event, 'games')">🎮 Star Games</button>
-        <button class="tab-link" onclick="openTab(event, 'proxies')">🪐 Proxy Wormholes</button>
-        <button class="tab-link" onclick="openTab(event, 'settings')">⚙️ Control Panel</button>
+        <button class="tab-link" onclick="openTab(event, 'games')">🎮 Games</button>
+        <button class="tab-link" onclick="openTab(event, 'proxies')">🔗 Proxies</button>
+        <button class="tab-link" onclick="openTab(event, 'settings')">⚙️ Settings</button>
     </div>
 
     <div class="content">
 
         <div class="warning">
-            ⚠️ **Cosmic Alert!** The Hub has been upgraded with a **Space Theme**, **Dark Mode**, and **Custom Backgrounds**! Set your controls in the **Control Panel** tab.
+            ⚠️ **Hub Update!** You now have **Dark Mode**, **Custom Backgrounds**, and **Animated Particles**! Check the **Settings** tab.
         </div>
 
         <div id="games" class="category-section active">
-            <h2>🚀 Launch Bay - Games Hub</h2>
+            <h2>🎮 Games Hub</h2>
             <div class="link-grid">
                 <a href="https://www.coolmathgames.com/" target="_blank" class="link-card">
                     <div>
-                        <h3><span class="icon">🧠</span> Coolmath Games Station</h3>
+                        <h3><span class="icon">🧠</span> Coolmath Games</h3>
                         <p>Often unblocked due to its 'educational' label. Great for puzzle games.</p>
                     </div>
                     <span class="url">www.coolmathgames.com</span>
@@ -390,7 +467,7 @@
 
                 <a href="https://www.hoodamath.com/" target="_blank" class="link-card">
                     <div>
-                        <h3><span class="icon">➕</span> Hooda Math Galaxy</h3>
+                        <h3><span class="icon">➕</span> Hooda Math</h3>
                         <p>A safe bet for math-themed games that filters often ignore.</p>
                     </div>
                     <span class="url">www.hoodamath.com</span>
@@ -398,7 +475,7 @@
 
                 <a href="https://scratch.mit.edu/" target="_blank" class="link-card">
                     <div>
-                        <h3><span class="icon">👨‍💻</span> Scratch Development Lab</h3>
+                        <h3><span class="icon">👨‍💻</span> Scratch</h3>
                         <p>User-created games and coding projects. A massive, creative library.</p>
                     </div>
                     <span class="url">scratch.mit.edu</span>
@@ -407,35 +484,35 @@
         </div>
 
         <div id="proxies" class="category-section">
-            <h2>🔗 Navigating the Void - Unblockers</h2>
+            <h2>🔗 Working Proxies & Unblockers</h2>
             <div class="link-grid">
                 
                 <div onclick="originalOpenCloaked('https://spiderexcavations.emploi.cl/')" class="link-card">
-                    <h3><span class="icon">🚀</span> Interstellar Wormhole</h3>
+                    <h3><span class="icon">🚀</span> Interstellar</h3>
                     <p>A popular, cutting-edge web proxy often used to access blocked content.</p>
                     <span class="url">spiderexcavations.emploi.cl (Cloaked)</span>
                 </div>
 
                 <div onclick="originalOpenCloaked('https://readingsubject.emploi.cl/')" class="link-card">
-                    <h3><span class="icon">📚</span> Petezah Nebula</h3>
+                    <h3><span class="icon">📚</span> Petezah</h3>
                     <p>Another unblocked link, potentially masquerading as a school resource.</p>
                     <span class="url">readingsubject.emploi.cl (Cloaked)</span>
                 </div>
 
                 <div onclick="originalOpenCloaked('https://mathlookscool.emploi.cl/')" class="link-card">
-                    <h3><span class="icon">🕶️</span> Shadow Comet (Math)</h3>
+                    <h3><span class="icon">🕶️</span> Shadow (Math)</h3>
                     <p>A fresh link designed to slip past Securly and other content filters.</p>
                     <span class="url">mathlookscool.emploi.cl (Cloaked)</span>
                 </div>
 
                 <div onclick="originalOpenCloaked('https://www.croxyproxy.com/')" class="link-card">
-                    <h3><span class="icon">🛡️</span> CroxyProxy Shield</h3>
+                    <h3><span class="icon">🛡️</span> CroxyProxy</h3>
                     <p>A well-known, free web proxy that encrypts your connection.</p>
                     <span class="url">www.croxyproxy.com (Cloaked)</span>
                 </div>
 
                 <div onclick="originalOpenCloaked('https://translate.google.com/')" class="link-card">
-                    <h3><span class="icon">🌐</span> Google Translator Warp</h3>
+                    <h3><span class="icon">🌐</span> Google Translate Method</h3>
                     <p>Paste a blocked site's URL into the translator and click the link to bypass simple blocks.</p>
                     <span class="url">translate.google.com (Cloaked)</span>
                 </div>
@@ -444,10 +521,10 @@
         </div>
 
         <div id="settings" class="category-section">
-            <h2>⚙️ Control Panel - Customization</h2>
+            <h2>⚙️ User Customization & Info</h2>
             
             <div class="setting-group">
-                <h3>Astro-Theme Toggle (Dark Mode)</h3>
+                <h3>Dark Mode</h3>
                 <label class="switch">
                     <input type="checkbox" id="darkModeToggle">
                     <span class="slider"></span>
@@ -455,23 +532,23 @@
             </div>
 
             <div class="setting-group" style="flex-direction: column; align-items: flex-start;">
-                <h3>Set Custom Star Field Image</h3>
+                <h3>Custom Background Image</h3>
                 <p style="margin-top: 10px; font-weight: 400; font-size: 14px;">Upload a custom image from your PC. It will be saved until you clear it!</p>
                 <div style="display: flex; gap: 10px; width: 100%;">
                     <input type="file" id="bgImageInput" accept="image/*" style="flex-grow: 1; padding: 10px; border: 1px solid var(--border-color); background-color: var(--bg-card-secondary);">
-                    <button onclick="clearCustomBackground()" style="padding: 10px 15px; background-color: #5c72ff; color: white; border: none; border-radius: 5px; cursor: pointer;">Clear Image</button>
+                    <button onclick="clearCustomBackground()" style="padding: 10px 15px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Clear Background</button>
                 </div>
             </div>
 
             <div class="settings-info">
-                <p><strong>Mission Status:</strong> School filters like Securly constantly update their block lists. If a proxy link stops working, it means the administrators have found it and blocked the wormhole.</p>
-                <p><strong>Warp Drive Cloaking Explained:</strong></p>
-                <p>The **Proxy Wormholes** use a JavaScript trick to open a **blank new window** first. Then, it projects the proxy site inside that window using an **iframe**. Because the original window opened as `about:blank`, that is what the address bar shows, helping to hide your current destination.</p>
-                <p><strong>Emergency Procedures (If a link is blocked):</strong></p>
+                <p><strong>Heads Up:</strong> School filters like Securly constantly update their block lists. If a link stops working, it means the administrators have found it and blocked it.</p>
+                <p><strong>About:Blank Cloaking Explained:</strong></p>
+                <p>The **Proxies** section uses a JavaScript trick to open a **blank new window** first. Then, it places the proxy site inside that window using an **iframe**. Because the original window opened as `about:blank`, that is what the address bar shows, even though the content is the active proxy site. This is a common method used to help bypass basic URL logging/monitoring.</p>
+                <p><strong>What to do if a link is blocked:</strong></p>
                 <ul>
-                    <li>Try a different **Proxy Wormhole** from the list.</li>
-                    <li>For games, try the **Google Translator Warp** with the game site's URL.</li>
-                    <li>Clear your browser's **cookies and cache** (eject old data) before trying a new proxy.</li>
+                    <li>Try a different link from the **Proxies** section.</li>
+                    <li>For games, try the **Google Translate Method** with the game site's URL.</li>
+                    <li>Clear your browser's cookies and cache before trying a new proxy.</li>
                 </ul>
             </div>
         </div>
