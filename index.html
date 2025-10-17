@@ -3,557 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ Unblocked Hub ⚡</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>External Content Loader</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Tailwind configuration for custom theme colors and Inter font
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              'primary': '#3b82f6', // Tailwind blue-500
+              'primary-dark': '#2563eb', // Tailwind blue-600
+              'dark-bg': '#1f2937', // Tailwind gray-800
+            }
+          }
+        }
+      }
+    </script>
     <style>
-        /*
-        ========================================
-        1. CSS Variables for Dark Mode (Original Aesthetic)
-        ========================================
-        */
-        :root {
-            /* Light Mode Defaults */
-            --bg-page: #e9eff5; /* Very light, fresh background */
-            --bg-card: #ffffff;
-            --bg-card-secondary: #f8f8f8;
-            --bg-navbar: #3e7cb1; /* Primary fresh color (Original) */
-            --color-text: #333;
-            --color-primary: #3e7cb1;
-            --color-link-hover: #5d98c5;
-            --color-card-text: #2a6896;
-            --color-card-url: #777;
-            --border-color: #ddd;
-            --shadow-base: rgba(0, 0, 0, 0.08);
-            --shadow-hover: rgba(62, 124, 177, 0.2);
-            --settings-info-bg: #fffacd;
-            --settings-info-border: #ffcc00;
-            --particle-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-        }
+      /* Ensure the body and html take full height for the full-page effect */
+      html, body, #app-container {
+        height: 100%;
+        margin: 0;
+        /* Prevent body scroll when iframe is loaded, letting the iframe handle its own scrolling */
+        overflow: hidden; 
+        font-family: 'Inter', sans-serif;
+      }
+      /* Style for the iframe to ensure it covers its container */
+      #content-area iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
 
-        body.dark-mode {
-            /* Dark Mode Overrides */
-            --bg-page: #1a1a1a;
-            --bg-card: #2c2c2c;
-            --bg-card-secondary: #353535;
-            --bg-navbar: #005691;
-            --color-text: #f0f0f0;
-            --color-primary: #5d98c5;
-            --color-link-hover: #007bff;
-            --color-card-text: #8dc6ff;
-            --color-card-url: #aaaaaa;
-            --border-color: #555;
-            --shadow-base: rgba(0, 0, 0, 0.3);
-            --shadow-hover: rgba(93, 152, 197, 0.5);
-            --settings-info-bg: #4a4000;
-            --settings-info-border: #e0ac00;
-            --particle-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+      /* On mobile, the sidebar is a fixed height, so content area needs to adjust */
+      @media (max-width: 767px) {
+        #content-area {
+          /* 100vh minus the height of the mobile sidebar (which is 5rem/80px) */
+          height: calc(100vh - 5rem); 
         }
-
-        /*
-        ========================================
-        2. Base Styles
-        ========================================
-        */
-        body {
-            font-family: 'Poppins', sans-serif; 
-            margin: 0;
-            padding-top: 80px;
-            min-height: 100vh;
-            background-color: var(--bg-page);
-            color: var(--color-text);
-            transition: background-color 0.5s, color 0.5s;
-            position: relative;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+      }
+      /* On desktop, the sidebar is full height, so content area naturally fills the rest */
+      @media (min-width: 768px) {
+        #content-area {
+          height: 100%;
         }
-
-        .content {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-            z-index: 5;
-            position: relative;
-        }
-
-        /*
-        ========================================
-        3. Navigation Bar (Tabs)
-        ========================================
-        */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--bg-navbar);
-            box-shadow: 0 4px 12px var(--shadow-base);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            padding: 0;
-        }
-        
-        .navbar button {
-            background-color: transparent;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-            margin: 0 10px;
-        }
-
-        .navbar button:hover:not(.active) {
-            background-color: var(--color-link-hover);
-        }
-        
-        .navbar button.active {
-            background-color: var(--color-link-hover);
-            border-bottom: 4px solid white;
-            padding-bottom: 11px;
-        }
-
-        /*
-        ========================================
-        4. Tab Content & Cards
-        ========================================
-        */
-        .category-section {
-            display: none;
-            padding: 40px;
-            margin-bottom: 30px;
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 6px 15px var(--shadow-base);
-        }
-        
-        .category-section.active {
-            display: block;
-        }
-
-        .category-section h2 {
-            font-size: 28px;
-            color: var(--color-primary);
-            border-bottom: 3px solid var(--color-primary);
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-            display: inline-block;
-        }
-        
-        .link-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .link-card {
-            background-color: var(--bg-card-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--color-text);
-            cursor: pointer;
-            padding: 20px;
-            border-radius: 10px;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .link-card:hover {
-            box-shadow: 0 8px 20px var(--shadow-hover);
-            transform: translateY(-5px);
-            background-color: var(--bg-card);
-        }
-
-        .link-card h3 {
-            color: var(--color-card-text);
-            margin-top: 0;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .icon {
-            margin-right: 10px;
-            font-size: 24px;
-        }
-
-        .link-card .url {
-            color: var(--color-card-url);
-            font-size: 14px;
-            word-break: break-all;
-        }
-
-        /* Settings Styles */
-        .settings-info {
-            line-height: 1.8;
-            background-color: var(--settings-info-bg);
-            padding: 20px;
-            border-left: 5px solid var(--settings-info-border);
-            border-radius: 8px;
-        }
-        
-        .warning {
-            color: #a33;
-            font-weight: 600;
-            background-color: #fcebeb;
-            border: 1px solid #ecc;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-        }
-        
-        .setting-group {
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .setting-group:last-of-type {
-            border-bottom: none;
-        }
-        
-        /* Custom Switch CSS */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--border-color);
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #2196F3;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        /*
-        ========================================
-        5. Particle Background
-        ========================================
-        */
-        .particle-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; 
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 2px;
-            height: 2px;
-            background: transparent;
-            /* Dot field via box-shadow */
-            box-shadow: 
-                0vw 0vh 0 0 var(--particle-color), 90vw 50vh 0 0 var(--particle-color), 10vw 80vh 0 0 var(--particle-color),
-                40vw 30vh 0 0 var(--particle-color), 70vw 90vh 0 0 var(--particle-color), 25vw 10vh 0 0 var(--particle-color),
-                95vw 10vh 0 0 var(--particle-color), 5vw 45vh 0 0 var(--particle-color), 50vw 95vh 0 0 var(--particle-color),
-                80vw 20vh 0 0 var(--particle-color), 15vw 60vh 0 0 var(--particle-color), 65vw 5vh 0 0 var(--particle-color),
-                35vw 70vh 0 0 var(--particle-color), 55vw 25vh 0 0 var(--particle-color), 75vw 85vh 0 0 var(--particle-color);
-            
-            animation: move-particles 60s linear infinite;
-        }
-
-        @keyframes move-particles {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100vw, 100vh); } 
-        }
+      }
     </style>
 </head>
 <body>
 
-    <div class="particle-background">
-        <div class="particles"></div>
-    </div>
+<div id="app-container" class="flex flex-col md:flex-row bg-gray-100">
 
-    <script>
-        // Store the original openCloaked function
-        const originalOpenCloaked = (url) => {
-            var newWindow = window.open('about:blank', '_blank');
-            if (newWindow) {
-                setTimeout(function() {
-                    var iframeHTML = `
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>Loading...</title>
-                            <style>
-                                body { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
-                                iframe { border: none; width: 100%; height: 100%; margin: 0; }
-                            </style>
-                        </head>
-                        <body>
-                            <iframe src="${url}"></iframe>
-                        </body>
-                        </html>
-                    `;
-                    newWindow.document.write(iframeHTML);
-                    newWindow.document.close();
-                }, 50);
-            } else {
-                alert("Popup Blocker detected! Please allow popups for this site to use the cloaking feature.");
-            }
-        };
+  <!-- Sidebar (Left Navigation) -->
+  <!-- On mobile: full width, fixed height (h-20) -->
+  <!-- On desktop: fixed width (w-64), full height (md:h-full) -->
+  <aside id="sidebar" class="bg-dark-bg text-white w-full md:w-64 flex-shrink-0 p-4 shadow-2xl h-20 md:h-full overflow-y-auto z-10">
+    <h1 class="text-2xl font-bold mb-6 text-primary border-b border-primary-dark pb-3 hidden md:block">
+      Navigation
+    </h1>
+    <nav class="flex md:block">
+      <ul class="flex md:flex-col w-full space-x-2 md:space-x-0">
+        <!-- Ragdoll Embed Button -->
+        <li class="flex-1 md:flex-auto">
+          <button
+            onclick="loadIframe('Ragdoll Archers', 'https://db.duck.alltutors.org/html/ragdoll_archers/index.html')"
+            class="w-full text-center md:text-left py-2 px-3 my-1 rounded-lg transition duration-150 ease-in-out bg-primary hover:bg-primary-dark text-lg font-semibold shadow-lg shadow-primary/50"
+          >
+            Ragdoll
+          </button>
+        </li>
+        <!-- Ragdoll Fullscreen Button (Now uses about:blank navigation) -->
+        <li class="flex-1 md:flex-auto">
+          <button
+            onclick="launchFullscreen('https://db.duck.alltutors.org/html/ragdoll_archers/index.html')"
+            class="w-full text-center md:text-left py-2 px-3 my-1 rounded-lg transition duration-150 ease-in-out bg-green-500 hover:bg-green-600 text-lg font-semibold shadow-lg shadow-green-500/50"
+          >
+            Launch Fullscreen
+          </button>
+        </li>
+        <!-- Home Button -->
+        <li class="flex-1 md:flex-auto">
+          <button
+            onclick="loadWelcome()"
+            class="w-full text-center md:text-left py-2 px-3 my-1 rounded-lg transition duration-150 ease-in-out hover:bg-gray-700 text-lg"
+          >
+            Home
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </aside>
 
-        // Tab Switching Logic
-        function openTab(evt, tabName) {
-            document.querySelectorAll(".category-section").forEach(el => el.classList.remove("active"));
-            document.querySelectorAll(".navbar button").forEach(el => el.classList.remove("active"));
-            
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-        
-        // Settings elements for new features
-        const body = document.body;
+  <!-- Main Content Area / Iframe Container -->
+  <main id="content-area" class="flex-1 overflow-auto flex items-center justify-center p-0 md:p-8">
+    <!-- Content will be loaded here -->
+  </main>
 
-        /*
-        ========================================
-        Dark Mode Logic
-        ========================================
-        */
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                body.classList.add('dark-mode');
-            }
-        }
+</div>
 
-        // Must attach event listener to the actual element after it's in the DOM
-        document.addEventListener('DOMContentLoaded', () => {
-             const toggle = document.getElementById('darkModeToggle');
-             
-             // Ensure the toggle state reflects the loaded theme
-             if (body.classList.contains('dark-mode')) {
-                 if (toggle) toggle.checked = true;
-             }
-             
-             if (toggle) {
-                toggle.addEventListener('change', () => {
-                    if (toggle.checked) {
-                        body.classList.add('dark-mode');
-                        localStorage.setItem('theme', 'dark');
-                    } else {
-                        body.classList.remove('dark-mode');
-                        localStorage.setItem('theme', 'light');
-                    }
-                });
-            }
-            // Manually set the initial active tab (Games) and link
-            document.getElementById('games').classList.add('active');
-            document.querySelector('.navbar button[onclick*="games"]').classList.add('active');
-        });
+<script>
+  const contentArea = document.getElementById('content-area');
 
-
-        /*
-        ========================================
-        Custom Background Logic
-        ========================================
-        */
-        function setBackground(url) {
-            if (url) {
-                body.style.backgroundImage = `url('${url}')`;
-                body.style.backgroundSize = 'cover';
-                body.style.backgroundPosition = 'center';
-                body.style.backgroundAttachment = 'fixed';
-            } else {
-                body.style.backgroundImage = 'none';
-            }
-        }
-
-        function loadBackground() {
-            const savedBg = localStorage.getItem('customBackground');
-            setBackground(savedBg);
-        }
-
-        function clearCustomBackground() {
-            setBackground(null);
-            localStorage.removeItem('customBackground');
-            const input = document.getElementById('bgImageInput');
-            if (input) input.value = '';
-            alert("Custom background cleared!");
-        }
-
-        // File input listener converts the local file to a Data URL string
-        document.addEventListener('change', (event) => {
-            if (event.target.id === 'bgImageInput') {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const dataUrl = e.target.result;
-                        setBackground(dataUrl);
-                        localStorage.setItem('customBackground', dataUrl); 
-                        alert("Custom background set and saved! (Large images may slow down load time)");
-                    }
-                    reader.readAsDataURL(file); 
-                }
-            }
-        });
-        
-        // Initial setup calls
-        loadTheme();
-        loadBackground();
-    </script>
-
-    <div class="navbar">
-        <button class="tab-link" onclick="openTab(event, 'games')">🎮 Games</button>
-        <button class="tab-link" onclick="openTab(event, 'proxies')">🔗 Proxies</button>
-        <button class="tab-link" onclick="openTab(event, 'settings')">⚙️ Settings</button>
-    </div>
-
-    <div class="content">
-
-        <div class="warning">
-            ⚠️ **Hub Update!** You now have **Dark Mode**, **Custom Backgrounds**, and **Animated Particles**! Check the **Settings** tab.
+  /**
+   * Loads a welcome message/placeholder into the content area.
+   */
+  function loadWelcome() {
+    contentArea.innerHTML = `
+      <div class="p-10 text-center max-w-xl">
+        <h2 class="text-6xl font-extrabold text-gray-800 mb-6">Content Loader</h2>
+        <p class="text-xl text-gray-600 mb-8">
+          Use the navigation bar on the left to dynamically load external websites into this space.
+        </p>
+        <div class="bg-white p-8 rounded-xl shadow-2xl border-t-4 border-primary">
+          <p class="text-gray-700 font-medium text-lg">
+            Click the <span class="font-bold text-primary">"Ragdoll"</span> button to load the embedded game, or 
+            <span class="font-bold text-green-500">"Launch Fullscreen"</span> to open it in a new tab.
+          </p>
         </div>
+      </div>
+    `;
+    // Add back the padding and center alignment for the welcome message
+    contentArea.classList.add('p-8');
+    contentArea.classList.add('items-center', 'justify-center');
+    contentArea.classList.remove('p-0');
+  }
 
-        <div id="games" class="category-section active">
-            <h2>🎮 Games Hub</h2>
-            <div class="link-grid">
-                <a href="https://www.coolmathgames.com/" target="_blank" class="link-card">
-                    <div>
-                        <h3><span class="icon">🧠</span> Coolmath Games</h3>
-                        <p>Often unblocked due to its 'educational' label. Great for puzzle games.</p>
-                    </div>
-                    <span class="url">www.coolmathgames.com</span>
-                </a>
+  /**
+   * Loads an iframe into the content area, making it full screen within the container.
+   * @param {string} title The title of the content being loaded.
+   * @param {string} url The URL to load in the iframe.
+   */
+  function loadIframe(title, url) {
+    // Clear the current content
+    contentArea.innerHTML = '';
 
-                <a href="https://www.hoodamath.com/" target="_blank" class="link-card">
-                    <div>
-                        <h3><span class="icon">➕</span> Hooda Math</h3>
-                        <p>A safe bet for math-themed games that filters often ignore.</p>
-                    </div>
-                    <span class="url">www.hoodamath.com</span>
-                </a>
+    // Remove welcome padding and align items for full iframe coverage
+    contentArea.classList.remove('p-8');
+    contentArea.classList.remove('items-center', 'justify-center');
+    contentArea.classList.add('p-0');
+    
+    // Add loading indicator while iframe loads
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'absolute inset-0 bg-gray-200/90 backdrop-blur-sm flex items-center justify-center text-2xl font-semibold text-gray-600';
+    loadingDiv.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Loading ${title}...`;
+    
+    // We append the loading indicator to the contentArea before creating the iframe
+    contentArea.appendChild(loadingDiv);
 
-                <a href="https://scratch.mit.edu/" target="_blank" class="link-card">
-                    <div>
-                        <h3><span class="icon">👨‍💻</span> Scratch</h3>
-                        <p>User-created games and coding projects. A massive, creative library.</p>
-                    </div>
-                    <span class="url">scratch.mit.edu</span>
-                </a>
-            </div>
-        </div>
+    // Create the iframe element
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.title = title;
+    iframe.allowFullscreen = true;
+    iframe.name = title;
+    iframe.style.opacity = '0'; // Start invisible
 
-        <div id="proxies" class="category-section">
-            <h2>🔗 Working Proxies & Unblockers</h2>
-            <div class="link-grid">
-                
-                <div onclick="originalOpenCloaked('https://spiderexcavations.emploi.cl/')" class="link-card">
-                    <h3><span class="icon">🚀</span> Interstellar</h3>
-                    <p>A popular, cutting-edge web proxy often used to access blocked content.</p>
-                    <span class="url">spiderexcavations.emploi.cl (Cloaked)</span>
-                </div>
+    // Use Tailwind utility class to ensure full height and width
+    iframe.classList.add('w-full', 'h-full', 'transition-opacity', 'duration-500');
 
-                <div onclick="originalOpenCloaked('https://readingsubject.emploi.cl/')" class="link-card">
-                    <h3><span class="icon">📚</span> Petezah</h3>
-                    <p>Another unblocked link, potentially masquerading as a school resource.</p>
-                    <span class="url">readingsubject.emploi.cl (Cloaked)</span>
-                </div>
+    iframe.onload = () => {
+      // Remove loading indicator and make iframe visible once content is loaded
+      loadingDiv.remove();
+      iframe.style.opacity = '1';
+    };
+    
+    iframe.onerror = () => {
+        loadingDiv.remove();
+        contentArea.innerHTML = `<div class="p-10 text-center max-w-xl">
+            <h3 class="text-3xl font-bold text-red-600 mb-4">Content Load Failed</h3>
+            <p class="text-gray-600">The external website could not be loaded. This might be due to security restrictions (X-Frame-Options) on the external server.</p>
+        </div>`;
+        contentArea.classList.add('p-8');
+        contentArea.classList.add('items-center', 'justify-center');
+    };
 
-                <div onclick="originalOpenCloaked('https://mathlookscool.emploi.cl/')" class="link-card">
-                    <h3><span class="icon">🕶️</span> Shadow (Math)</h3>
-                    <p>A fresh link designed to slip past Securly and other content filters.</p>
-                    <span class="url">mathlookscool.emploi.cl (Cloaked)</span>
-                </div>
+    // Append the iframe to the content area
+    contentArea.appendChild(iframe);
+  }
 
-                <div onclick="originalOpenCloaked('https://www.croxyproxy.com/')" class="link-card">
-                    <h3><span class="icon">🛡️</span> CroxyProxy</h3>
-                    <p>A well-known, free web proxy that encrypts your connection.</p>
-                    <span class="url">www.croxyproxy.com (Cloaked)</span>
-                </div>
+  /**
+   * Opens a new window with about:blank and then navigates it to the target URL.
+   * This is the most reliable way to open external content in a new full page tab.
+   * @param {string} url The URL to open.
+   */
+  function launchFullscreen(url) {
+    try {
+      // 1. Open the new window using 'about:blank'
+      const newWindow = window.open('about:blank', '_blank');
 
-                <div onclick="originalOpenCloaked('https://translate.google.com/')" class="link-card">
-                    <h3><span class="icon">🌐</span> Google Translate Method</h3>
-                    <p>Paste a blocked site's URL into the translator and click the link to bypass simple blocks.</p>
-                    <span class="url">translate.google.com (Cloaked)</span>
-                </div>
+      if (newWindow) {
+        // 2. If the window opened successfully (not blocked), navigate it to the target URL
+        newWindow.location.href = url;
+      } else {
+        // If newWindow is null, it was blocked
+        throw new Error("Popup blocked");
+      }
+      
+      // Restore content area (in case a temporary message was visible)
+      loadWelcome();
 
-            </div>
-        </div>
+    } catch (e) {
+      console.error("Could not open new window:", e);
+      
+      // Display message if launch was blocked - Updated to be more explicit about popup blocker
+      contentArea.innerHTML = `<div class="p-10 text-center max-w-xl">
+        <h3 class="text-3xl font-bold text-red-600 mb-4">Launch Blocked</h3>
+        <p class="text-gray-600">The browser prevented the window from opening. <span class="font-bold text-red-700">This is usually caused by a popup blocker.</span> Please ensure pop-ups are allowed for this site, or copy this URL manually: <code class="bg-gray-200 p-1 rounded break-all">${url}</code></p>
+      </div>`;
+      contentArea.classList.add('p-8', 'items-center', 'justify-center');
+    }
+  }
 
-        <div id="settings" class="category-section">
-            <h2>⚙️ User Customization & Info</h2>
-            
-            <div class="setting-group">
-                <h3>Dark Mode</h3>
-                <label class="switch">
-                    <input type="checkbox" id="darkModeToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-group" style="flex-direction: column; align-items: flex-start;">
-                <h3>Custom Background Image</h3>
-                <p style="margin-top: 10px; font-weight: 400; font-size: 14px;">Upload a custom image from your PC. It will be saved until you clear it!</p>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <input type="file" id="bgImageInput" accept="image/*" style="flex-grow: 1; padding: 10px; border: 1px solid var(--border-color); background-color: var(--bg-card-secondary);">
-                    <button onclick="clearCustomBackground()" style="padding: 10px 15px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Clear Background</button>
-                </div>
-            </div>
-
-            <div class="settings-info">
-                <p><strong>Heads Up:</strong> School filters like Securly constantly update their block lists. If a link stops working, it means the administrators have found it and blocked it.</p>
-                <p><strong>About:Blank Cloaking Explained:</strong></p>
-                <p>The **Proxies** section uses a JavaScript trick to open a **blank new window** first. Then, it places the proxy site inside that window using an **iframe**. Because the original window opened as `about:blank`, that is what the address bar shows, even though the content is the active proxy site. This is a common method used to help bypass basic URL logging/monitoring.</p>
-                <p><strong>What to do if a link is blocked:</strong></p>
-                <ul>
-                    <li>Try a different link from the **Proxies** section.</li>
-                    <li>For games, try the **Google Translate Method** with the game site's URL.</li>
-                    <li>Clear your browser's cookies and cache before trying a new proxy.</li>
-                </ul>
-            </div>
-        </div>
-
-    </div>
-
+  // Load the welcome screen on initial page load (Home First)
+  window.onload = loadWelcome;
+</script>
 </body>
 </html>
