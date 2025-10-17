@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Content Loader</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Tailwind configuration for custom theme colors and Inter font
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              'primary': '#3b82f6', // Tailwind blue-500
+              'primary-dark': '#2563eb', // Tailwind blue-600
+              'dark-bg': '#1f2937', // Tailwind gray-800
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Ensure the body and html take full height for the full-page effect */
+      html, body, #app-container {
+        height: 100%;
+        margin: 0;
+        /* Prevent body scroll when iframe is loaded, letting the iframe handle its own scrolling */
+        overflow: hidden; 
+        font-family: 'Inter', sans-serif;
+      }
+      /* Style for the iframe to ensure it covers its container */
+      #content-area iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      /* On mobile, the sidebar is a fixed height, so content area needs to adjust */
+      @media (max-width: 767px) {
+        #content-area {
+          /* 100vh minus the height of the mobile sidebar (which is 5rem/80px) */
+          height: calc(100vh - 5rem); 
+        }
+      }
+      /* On desktop, the sidebar is full height, so content area naturally fills the rest */
+      @media (min-width: 768px) {
+        #content-area {
+          height: 100%;
+        }
+      }
+    </style>
+</head>
+<body>
+
+<div id="app-container" class="flex flex-col md:flex-row bg-gray-100">
+
+  <!-- Sidebar (Left Navigation) -->
+  <!-- On mobile: full width, fixed height (h-20) -->
+  <!-- On desktop: fixed width (w-64), full height (md:h-full) -->
+  <aside id="sidebar" class="bg-dark-bg text-white w-full md:w-64 flex-shrink-0 p-4 shadow-2xl h-20 md:h-full overflow-y-auto z-10">
+    <h1 class="text-2xl font-bold mb-6 text-primary border-b border-primary-dark pb-3 hidden md:block">
+      Navigation
+    </h1>
+    <nav class="flex md:block">
+      <ul class="flex md:flex-col w-full space-x-2 md:space-x-0">
+        <!-- Ragdoll Embed Button -->
+        <li class="flex-1 md:flex-auto">
+          <button
+            onclick="loadIframe('Ragdoll Archers', 'https://db.duck.alltutors.org/html/ragdoll_archers/index.html')"
+            class="w-full text-center md:text-left py-2 px-3 my-1 rounded-lg transition duration-150 ease-in-out bg-primary hover:bg-primary-dark text-lg font-semibold shadow-lg shadow-primary/50"
+          >
+            Ragdoll
+          </button>
+        </li>
+        <!-- Ragdoll Fullscreen Button (Now uses about:blank navigation) -->
+        <li class="flex-1 md:flex-auto">
+          <button
+            onclick="launchFullscreen('https://db.duck.alltutors.org/html/ragdoll_archers/index.html')"
+            class="w-full text-center md:text-left py-2 px-3 my-1 rounded-lg transition duration-150 ease-in-out bg-green-500 hover:bg-green-600 text-lg font-semibold shadow-lg shadow-green-500/50"
+          >
+            Launch Fullscreen
+          </button>
+        </li>
+        <!-- Home Button -->
+        <li class="flex-1 md:flex-auto">
+          <button
+            onclick="loadWelcome()"
+            class="w-full text-center md:text-left py-2 px-3 my-1 rounded-lg transition duration-150 ease-in-out hover:bg-gray-700 text-lg"
+          >
+            Home
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area / Iframe Container -->
+  <main id="content-area" class="flex-1 overflow-auto flex items-center justify-center p-0 md:p-8">
+    <!-- Content will be loaded here -->
+  </main>
+
+</div>
+
+<script>
+  const contentArea = document.getElementById('content-area');
+
+  /**
+   * Loads a welcome message/placeholder into the content area.
+   */
+  function loadWelcome() {
+    contentArea.innerHTML = `
+      <div class="p-10 text-center max-w-xl">
+        <h2 class="text-6xl font-extrabold text-gray-800 mb-6">Content Loader</h2>
+        <p class="text-xl text-gray-600 mb-8">
+          Use the navigation bar on the left to dynamically load external websites into this space.
+        </p>
+        <div class="bg-white p-8 rounded-xl shadow-2xl border-t-4 border-primary">
+          <p class="text-gray-700 font-medium text-lg">
+            Click the <span class="font-bold text-primary">"Ragdoll"</span> button to load the embedded game, or 
+            <span class="font-bold text-green-500">"Launch Fullscreen"</span> to open it in a new tab.
+          </p>
+        </div>
+      </div>
+    `;
+    // Add back the padding and center alignment for the welcome message
+    contentArea.classList.add('p-8');
+    contentArea.classList.add('items-center', 'justify-center');
+    contentArea.classList.remove('p-0');
+  }
+
+  /**
+   * Loads an iframe into the content area, making it full screen within the container.
+   * @param {string} title The title of the content being loaded.
+   * @param {string} url The URL to load in the iframe.
+   */
+  function loadIframe(title, url) {
+    // Clear the current content
+    contentArea.innerHTML = '';
+
+    // Remove welcome padding and align items for full iframe coverage
+    contentArea.classList.remove('p-8');
+    contentArea.classList.remove('items-center', 'justify-center');
+    contentArea.classList.add('p-0');
+    
+    // Add loading indicator while iframe loads
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'absolute inset-0 bg-gray-200/90 backdrop-blur-sm flex items-center justify-center text-2xl font-semibold text-gray-600';
+    loadingDiv.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Loading ${title}...`;
+    
+    // We append the loading indicator to the contentArea before creating the iframe
+    contentArea.appendChild(loadingDiv);
+
+    // Create the iframe element
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.title = title;
+    iframe.allowFullscreen = true;
+    iframe.name = title;
+    iframe.style.opacity = '0'; // Start invisible
+
+    // Use Tailwind utility class to ensure full height and width
+    iframe.classList.add('w-full', 'h-full', 'transition-opacity', 'duration-500');
+
+    iframe.onload = () => {
+      // Remove loading indicator and make iframe visible once content is loaded
+      loadingDiv.remove();
+      iframe.style.opacity = '1';
+    };
+    
+    iframe.onerror = () => {
+        loadingDiv.remove();
+        contentArea.innerHTML = `<div class="p-10 text-center max-w-xl">
+            <h3 class="text-3xl font-bold text-red-600 mb-4">Content Load Failed</h3>
+            <p class="text-gray-600">The external website could not be loaded. This might be due to security restrictions (X-Frame-Options) on the external server.</p>
+        </div>`;
+        contentArea.classList.add('p-8');
+        contentArea.classList.add('items-center', 'justify-center');
+    };
+
+    // Append the iframe to the content area
+    contentArea.appendChild(iframe);
+  }
+
+  /**
+   * Opens a new window with about:blank and then navigates it to the target URL.
+   * This is the most reliable way to open external content in a new full page tab.
+   * @param {string} url The URL to open.
+   */
+  function launchFullscreen(url) {
+    try {
+      // 1. Open the new window using 'about:blank'
+      const newWindow = window.open('about:blank', '_blank');
+
+      if (newWindow) {
+        // 2. If the window opened successfully (not blocked), navigate it to the target URL
+        newWindow.location.href = url;
+      } else {
+        // If newWindow is null, it was blocked
+        throw new Error("Popup blocked");
+      }
+      
+      // Restore content area (in case a temporary message was visible)
+      loadWelcome();
+
+    } catch (e) {
+      console.error("Could not open new window:", e);
+      
+      // Display message if launch was blocked - Updated to be more explicit about popup blocker
+      contentArea.innerHTML = `<div class="p-10 text-center max-w-xl">
+        <h3 class="text-3xl font-bold text-red-600 mb-4">Launch Blocked</h3>
+        <p class="text-gray-600">The browser prevented the window from opening. <span class="font-bold text-red-700">This is usually caused by a popup blocker.</span> Please ensure pop-ups are allowed for this site, or copy this URL manually: <code class="bg-gray-200 p-1 rounded break-all">${url}</code></p>
+      </div>`;
+      contentArea.classList.add('p-8', 'items-center', 'justify-center');
+    }
+  }
+
+  // Load the welcome screen on initial page load (Home First)
+  window.onload = loadWelcome;
+</script>
+</body>
+</html>
